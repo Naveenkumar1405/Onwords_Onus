@@ -2,12 +2,10 @@ import requests
 from flask import Flask, render_template, redirect, request, session,url_for
 from flask_session import Session
 
-
 app = Flask(__name__)
-app.config["SESSION_PERMANENT"] = False
+app.config["SESSION_PERMANENT"] = True
 app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
-
 
 @app.route('/')
 def login():
@@ -16,23 +14,38 @@ def login():
 @app.route('/signin', methods=['GET', 'POST'])
 def signin():
     if request.method == 'POST':
-        password = request.form['password']
-        email = request.form['email']
-        data={
-            "email":email,
-            "password":password
+        password = request.form.get('password')
+        email = request.form.get('email')
+
+        if not email or not password:
+            return render_template('signin.html', message="Email or password not provided")
+
+        data = {
+            "email": email,
+            "password": password
         }
-        print(email,password)
+        print(f"Trying to login with email: {email} and password: {password}")
+
         try:
             print("inside try")
-            uid=requests.post(url="http://192.168.1.91:8000/staff/login",json=data)
-            uid1=uid.json()
-            session[uid]=uid1
-            return redirect(url_for('get_data'))
+            response = requests.post(url="http://192.168.1.91:8000/staff/login", json=data)
+            response_data = response.json()  
+            
+            if response.status_code == 200 and 'uid' in response_data:
+                print(f"Login successful, received uid: {response_data['uid']}")
+                session['uid'] = response_data['uid']
+                resp = make_response(redirect(url_for('get_data')))
+
+                resp.set_cookie('uid', str(response_data['uid']))
+                return resp
+            else:
+                print(f"Received status code: {response.status_code}, response: {response_data}")
+                raise Exception('Invalid response')
         except Exception as e:
-            print(e)
-            message="Server Down"
-            return render_template('signin.html',message=message)
+            print(f"Exception during login: {e}")
+            message = "Server Down"
+            return render_template('signin.html', message=message)
+
 
 @app.route('/schedule', methods=['GET', 'POST'])
 def schedules():
@@ -50,7 +63,6 @@ def schedules():
             response = requests.post(url=fastapi_url, json=schedule)
             return render_template('admindashboard.html',message=response.json())
         except:
-            print("+++++++++++++++++++++++++")
             message="Server Down"
             return render_template('admindashboard.html',message=message)
     else:
@@ -132,7 +144,6 @@ def staffcreate():
     else:
         return render_template('admindashboard.html') 
 
-
 @app.route('/get_data', methods=['GET', 'POST'])
 def get_data():
     try:
@@ -140,16 +151,15 @@ def get_data():
         print("get",uid)
         fastapi_url ="http://192.168.1.91:8000/staff/data"
         try:
-            print("inside========")
-            response = requests.post(url=fastapi_url, json=uid)
+            response = requests.post(url=fastapi_url, json={'uid': uid}) 
             print("success")
-            return render_template('staffdashboard.html',message=response)
+            return render_template('staffdashboard.html',message=response.json())
         except:
-            print("+++++++++++++++++++++++++")
             message="Server Down"
             return render_template('staffdashboard.html',message=message)
     except:
-           return redirect(url_for("/")) 
+        return redirect(url_for("login")) 
+ 
 
 @app.route('/addnotes', methods=['GET', 'POST'])
 def addnotes():
@@ -169,7 +179,6 @@ def addnotes():
             response = requests.post(url=fastapi_url, json=notes)
             return render_template('staffdashboard.html',message=response.json())
         except:
-            print("+++++++++++++++++++++++++")
             message="Server Down"
             return render_template('staffdashboard.html',message=message)
     else:
@@ -223,7 +232,6 @@ def clientcreate():
             response = requests.post(url=fastapi_url, json=client)
             return render_template('staffdashboard.html',message=response.json())
         except:
-            print("+++++++++++++++++++++++++")
             message="Server Down"
             return render_template('staffdashboard.html',message=message)
     else:
