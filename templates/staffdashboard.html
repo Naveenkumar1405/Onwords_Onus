@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Input Form</title>
+</head>
+<body>
+    <h2>Login Form</h2>
+    {%if message%}
+    <h3>{{message}}</h3>
+    {%endif%}
+    <h2>Input Form</h2>
+    <form action="/createclient" method="post">
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" required><br><br>
+        
+        <label for="phone">Phone:</label>
+        <input type="tel" id="phone" name="phone" required><br><br>
+        
+        <h3>Address</h3>
+        <label for="door_no">Door No:</label>
+        <input type="text" id="door_no" name="address_door_no"><br>
+        
+        <label for="street">Street:</label>
+        <input type="text" id="street" name="address_street"><br>
+        
+        <label for="city">City:</label>
+        <input type="text" id="city" name="address_city"><br>
+        
+        <label for="state">State:</label>
+        <input type="text" id="state" name="address_state"><br>
+        
+        <label for="pincode">Pincode:</label>
+        <input type="text" id="pincode" name="address_pincode"><br>
+        
+        <label for="landmark">Landmark:</label>
+        <input type="text" id="landmark" name="address_landmark"><br><br>
+        
+        <label for="rating">Rating:</label>
+        <input type="text" id="rating" name="rating"><br><br>
+        
+        <label for="pod_id">Pod ID:</label>
+        <input type="text" id="pod_id" name="pod_id"><br><br>
+        
+        <h3>Enquiry</h3>
+        <label for="lead_source">Lead Source:</label>
+        <input type="text" id="lead_source" name="enquiry_lead_source"><br>
+        
+        <label for="created_by">Created By:</label>
+        <input type="text" id="created_by" name="enquiry_created_by"><br>
+        
+        <label for="enquired_for">Enquired For:</label>
+        <input type="text" id="enquired_for" name="enquiry_enquired_for"><br><br>
+        
+        <label for="notes">Notes:</label>
+        <textarea id="notes" name="notes"></textarea><br><br>
+        
+        <input type="submit" value="Submit">
+    </form>
+</body>
+</html>

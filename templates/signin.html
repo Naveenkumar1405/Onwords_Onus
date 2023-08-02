@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- bootstarp links -->
+    <link rel="stylesheet" href="../static/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../static/css/main.css">
+    <!-- bootstarp links -->
+    <title>Admin Panle</title>
+</head>
+
+<body>
+   <section class="login-sec">
+    <div class="container">
+        <h1><img src="../static/images/logos.png" alt="" class="img-fluid logo"></h1>
+        <div class="row">
+           <div class="col-md-6 left-p">
+           <h3 class="login-text-head">
+            Hey Welcome 
+            <br>
+            back to <span class="text-danger">Team onwords</span>
+           </h3>
+            <form action="signin" class="login-form" method="post">
+                {%if message%}
+                <h3>{{message}}</h3>
+                {%endif%}
+                <div class="form-group">
+                    <label for="mail">Email</label>
+                    <div class="inp-group">
+                        <img src="../static/images/email.svg" alt="" class="img-fluid">
+                        <input type="mail" id="mail" name="email" placeholder="Yourname@onwords.in">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <div class="inp-group">
+                        <img src="../static/images/password.svg" alt="" class="img-fluid">
+                        <input type="password" id="password" name="password" placeholder=". . . . . . . . . . ">
+                    </div>
+                </div>
+                <button class="login-btn">Login</button>
+            </form>
+           </div>
+           <div class="col-md-6">
+               <img src="../static/images/login-page.png" alt="login-page" class="img-fluid login-img">
+           </div>
+        </div>
+       </div>
+   </section>
+
+
+    <!-- script start -->
+    <script src="../static/js/bootstrap.bundle.js"></script>
+    <script src="../static/js/bootstrap.min.js"></script>
+    <!-- script end -->
+</body>
+
+</html>
