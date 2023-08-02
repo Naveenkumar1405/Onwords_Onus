@@ -1,6 +1,13 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, session, jsonify
 import requests
+from flask import Flask, render_template, redirect, request, session,url_for
+from flask_session import Session
+
+
 app = Flask(__name__)
+app.config["SESSION_PERMANENT"] = False
+app.config["SESSION_TYPE"] = "filesystem"
+Session(app)
+
 
 @app.route('/')
 def login():
@@ -11,19 +18,43 @@ def signin():
     if request.method == 'POST':
         password = request.form['password']
         email = request.form['email']
+        data={
+            "email":email,
+            "password":password
+        }
+        print(email,password)
         try:
-            uid=requests.post(url="http//:192.168.1.91:8000/login/email/password")
-            if uid is not None:
-                if uid == "admin":
-                    return render_template('admindashboard.html')
-                else:
-                    return render_template('staffdashboard.html')
-            else:
-                message="Enter Valid Details"
-                return render_template('signin.html',message=message)
-        except:
+            print("inside try")
+            uid=requests.post(url="http://192.168.1.91:8000/staff/login",json=data)
+            uid1=uid.json()
+            session[uid]=uid1
+            return redirect(url_for('get_data'))
+        except Exception as e:
+            print(e)
             message="Server Down"
             return render_template('signin.html',message=message)
+
+@app.route('/schedule', methods=['GET', 'POST'])
+def schedules():
+    if request.method == 'POST':
+        pr_uid = request.form['pr_uid']
+        state = request.form['state']
+        reason = request.form['reason']
+        schedule = {
+            "pr_uid": pr_uid,
+            "state": state,
+            "reason": reason
+        }
+        fastapi_url = "http://192.168.1.91:8000/create_staff"
+        try:
+            response = requests.post(url=fastapi_url, json=schedule)
+            return render_template('admindashboard.html',message=response.json())
+        except:
+            print("+++++++++++++++++++++++++")
+            message="Server Down"
+            return render_template('admindashboard.html',message=message)
+    else:
+        return render_template('admindashboard.html')    
 
 @app.route('/create_staff', methods=['GET', 'POST'])
 def staffcreate():
@@ -54,6 +85,7 @@ def staffcreate():
         government_id_aadhar_no = request.form['government_id_aadhar_no']
         government_id_pan_no = request.form['government_id_pan_no']
         role = request.form['role']
+        password=request.form['Password']
         staff = {
             "name": name,
             "phone": phone,
@@ -86,19 +118,62 @@ def staffcreate():
                 "aadhar_no": government_id_aadhar_no,
                 "pan_no": government_id_pan_no
             },
-            "role": role
+            "role": role,
+            "password":password
         }
-
         fastapi_url = "http://192.168.1.91:8000/create_staff"
         try:
             response = requests.post(url=fastapi_url, json=staff)
-            return render_template('admindashboard.html',message=response.json())
+            return render_template('admindashboard.html',message=response)
         except:
             print("+++++++++++++++++++++++++")
             message="Server Down"
             return render_template('admindashboard.html',message=message)
     else:
         return render_template('admindashboard.html') 
+
+
+@app.route('/get_data', methods=['GET', 'POST'])
+def get_data():
+    try:
+        uid = request.cookies.get('uid')
+        print("get",uid)
+        fastapi_url ="http://192.168.1.91:8000/staff/data"
+        try:
+            print("inside========")
+            response = requests.post(url=fastapi_url, json=uid)
+            print("success")
+            return render_template('staffdashboard.html',message=response)
+        except:
+            print("+++++++++++++++++++++++++")
+            message="Server Down"
+            return render_template('staffdashboard.html',message=message)
+    except:
+           return redirect(url_for("/")) 
+
+@app.route('/addnotes', methods=['GET', 'POST'])
+def addnotes():
+    if request.method == 'POST':
+        pr_user_id = request.form['pr_user_id']
+        notes = request.form['notes']
+        notes = {
+            "pr_user_id": "Anitha",
+            "notes": notes
+        }
+        
+        # URL of the FastAPI endpoint
+        fastapi_url = f"http://192.168.1.91:8000/client/{pr_user_id}/add_notes"
+
+        # Make an HTTP POST request to the FastAPI endpoint
+        try:
+            response = requests.post(url=fastapi_url, json=notes)
+            return render_template('staffdashboard.html',message=response.json())
+        except:
+            print("+++++++++++++++++++++++++")
+            message="Server Down"
+            return render_template('staffdashboard.html',message=message)
+    else:
+        return render_template('staffdashboard.html')   
 
 
 @app.route('/createclient', methods=['GET', 'POST'])

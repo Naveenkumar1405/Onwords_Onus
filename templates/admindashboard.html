@@ -87,7 +87,23 @@
         <label for="role">Role:</label>
         <input type="text" id="role" name="role" required><br><br>
 
-        <input type="submit" value="Create staff">
+        <label for="role">Password:</label>
+        <input type="Password" id="Password" name="Password" required><br><br>
+
+
+        <input type="submit" name="staffcreate" value="Create staff">
+    </form>
+    <form method="POST" action="/schedules">
+        <label for="pr_uid">Pr UID:</label>
+        <input type="text" id="pr_uid" name="pr_uid" required><br><br>
+    
+        <label for="state">State:</label>
+        <input type="text" id="state" name="state" required><br><br>
+    
+        <label for="reason">Reason:</label>
+        <input type="text" id="reason" name="reason" required><br><br>
+    
+        <input type="submit" name="schedulesubmit" value="Submit">
     </form>
 </body>
 </html>
