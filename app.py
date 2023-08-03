@@ -1,5 +1,5 @@
 import requests
-from flask import Flask, render_template, redirect, request, session,url_for
+from flask import Flask, render_template, redirect, request, session,url_for,make_response
 from flask_session import Session
 
 app = Flask(__name__)
@@ -30,13 +30,13 @@ def signin():
             print("inside try")
             response = requests.post(url="http://192.168.1.91:8000/staff/login", json=data)
             response_data = response.json()  
-            
-            if response.status_code == 200 and 'uid' in response_data:
-                print(f"Login successful, received uid: {response_data['uid']}")
-                session['uid'] = response_data['uid']
-                resp = make_response(redirect(url_for('get_data')))
-
-                resp.set_cookie('uid', str(response_data['uid']))
+            print("==============",response_data)
+            if response.status_code == 200:
+                print(f"Login successful, received uid: {response_data}")
+                session['uid'] = response_data
+                resp = redirect(url_for('get_data'))
+                resp.set_cookie('uid', str(response_data))
+                print("Cookie set:", resp.headers.get('Set-Cookie'))
                 return resp
             else:
                 print(f"Received status code: {response.status_code}, response: {response_data}")
@@ -45,8 +45,27 @@ def signin():
             print(f"Exception during login: {e}")
             message = "Server Down"
             return render_template('signin.html', message=message)
+    else:
+        return render_template('signin.html')    
 
-
+@app.route('/get_data', methods=['GET', 'POST'])
+def get_data():
+    try:
+        uid = request.cookies.get('uid')
+        print("get",uid)
+        fastapi_url ="http://192.168.1.91:8000/staff/data"
+        try:
+            response = requests.post(url=fastapi_url, json={'uid': uid}) 
+            print("success")
+            response=response.json()
+            name=response["name"]
+            return render_template('staffdashboard.html',message=name)
+        except:
+            message="Server Down"
+            return render_template('staffdashboard.html',message=message)
+    except:
+        return redirect(url_for("login"))
+    
 @app.route('/schedule', methods=['GET', 'POST'])
 def schedules():
     if request.method == 'POST':
@@ -66,7 +85,14 @@ def schedules():
             message="Server Down"
             return render_template('admindashboard.html',message=message)
     else:
-        return render_template('admindashboard.html')    
+        return render_template('admindashboard.html')
+      
+@app.route('/logout')
+def logout():
+    session.pop('uid', None)
+    resp = redirect(url_for('signin'))
+    resp.delete_cookie('uid')
+    return redirect(url_for("signin"))
 
 @app.route('/create_staff', methods=['GET', 'POST'])
 def staffcreate():
@@ -144,21 +170,7 @@ def staffcreate():
     else:
         return render_template('admindashboard.html') 
 
-@app.route('/get_data', methods=['GET', 'POST'])
-def get_data():
-    try:
-        uid = request.cookies.get('uid')
-        print("get",uid)
-        fastapi_url ="http://192.168.1.91:8000/staff/data"
-        try:
-            response = requests.post(url=fastapi_url, json={'uid': uid}) 
-            print("success")
-            return render_template('staffdashboard.html',message=response.json())
-        except:
-            message="Server Down"
-            return render_template('staffdashboard.html',message=message)
-    except:
-        return redirect(url_for("login")) 
+
  
 
 @app.route('/addnotes', methods=['GET', 'POST'])
