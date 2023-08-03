@@ -2,113 +2,35 @@
 <html>
 <head>
     <title>Input Form</title>
+    <style>
+        header {
+            padding: 10px;
+            text-align: center;
+            font-size: 35px;
+            color: hsl(0, 71%, 1%);
+        }
+        nav {
+            margin: 20px 0;
+        }
+        nav a {
+            margin: 0 15px;
+            color: rgb(11, 4, 4);
+            text-decoration: none;
+        }
+    </style>
 </head>
 <body>
-    <a href="/logout">Log Out</a>
+<nav>
+    <a href="/get_data">Home</a>
+    <a href="/createclient">Create Client</a>
+    
+    <a href="/addnotes">Add Notes</a>
+    <!-- <a href="/payment_details">Payments</a>
+    <a href="/statuschange">statuschange</a> -->
+    <a href="/logout">Logout</a>
+</nav>
     {%if message%}
-    <h3>{{message}}</h3>
+    <h3>Hi {{message}}</h3>
     {%endif%}
-    <h2>Input Form</h2>
-    <form action="/createclient" method="post">
-        <label for="name">Name:</label>
-        <input type="text" id="name" name="name" required><br><br>
-        
-        <label for="phone">Phone:</label>
-        <input type="tel" id="phone" name="phone" required><br><br>
-        
-        <h3>Address</h3>
-        <label for="door_no">Door No:</label>
-        <input type="text" id="door_no" name="address_door_no"><br>
-        
-        <label for="street">Street:</label>
-        <input type="text" id="street" name="address_street"><br>
-        
-        <label for="city">City:</label>
-        <input type="text" id="city" name="address_city"><br>
-        
-        <label for="state">State:</label>
-        <input type="text" id="state" name="address_state"><br>
-        
-        <label for="pincode">Pincode:</label>
-        <input type="text" id="pincode" name="address_pincode"><br>
-        
-        <label for="landmark">Landmark:</label>
-        <input type="text" id="landmark" name="address_landmark"><br><br>
-        
-        <label for="rating">Rating:</label>
-        <input type="text" id="rating" name="rating"><br><br>
-        
-        <label for="pod_id">Pod ID:</label>
-        <input type="text" id="pod_id" name="pod_id"><br><br>
-        
-        <h3>Enquiry</h3>
-        <label for="lead_source">Lead Source:</label>
-        <input type="text" id="lead_source" name="enquiry_lead_source"><br>
-        
-        <label for="created_by">Created By:</label>
-        <input type="text" id="created_by" name="enquiry_created_by"><br>
-        
-        <label for="enquired_for">Enquired For:</label>
-        <input type="text" id="enquired_for" name="enquiry_enquired_for"><br><br>
-        
-        <label for="notes">Notes:</label>
-        <textarea id="notes" name="notes"></textarea><br><br>
-        
-        <input type="submit" value="Submit">
-    </form>
-    <br><br>
-    <form method="POST" action="post">
-        <label for="pr_user_id">Customer Number:</label>
-        <input type="text" id="pr_user_id" name="pr_user_id" required><br><br>
-    
-        <label for="notes">Notes:</label>
-        <textarea id="notes" name="notes" rows="4" cols="50" required></textarea><br><br>
-    
-        <input type="submit" value="Submit">
-    </form>
-
-    <form action="/statuschange" method="post">
-        <label for="clientid">Customer Number:</label>
-        <input type="text" id="clientid" name="clientid" required><br><br>
-    
-        <select id="notes" name="state" required>
-            <option value="">Select status</option>
-            <option value="Following Up">Following UP</option>
-            <option value="Under Construction">Under Construction</option>
-            <option value="Installation">Installation</option>
-            <option value="completed">Completd</option>
-        </select><br><br>
-
-        <label for="reason">Reason:</label>
-        <input type="text" id="reason" name="reason" required><br><br>
-
-        <input type="submit" value="Submit">
-    </form>
-    <br>
-
-    <form action="/client_search" method="POST">
-        <label for="reason">Search:</label>
-        <input type="text" id="search" name="clientnumber" required>
-        <input type="submit" value="Submit">
-    </form>
-
-    <form action="/payment_details" method="POST" >
-        <label for="pr_user_id">Customer Number:</label>
-        <input type="text" id="customerid" name="customerid" required><br><br>
-
-        <label for="pr_user_id">payment_id:</label>
-        <input type="text" id="payment_id" name="payment_id" required><br><br>
-
-        <label for="pr_user_id">amount:</label>
-        <input type="text" id="amount" name="amount" required><br><br>
-
-        <label for="pr_user_id">paid_for:</label>
-        <input type="text" id="paid_for" name="paid_for" required><br><br>
-
-        <label for="pr_user_id">pending_payment:</label>
-        <input type="text" id="pending_payment" name="pending_payment" required><br><br>
-        
-        <input type="submit" value="Submit">
-    </form>
-</body>
+    </body>
 </html>

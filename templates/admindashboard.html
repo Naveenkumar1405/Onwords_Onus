@@ -2,123 +2,69 @@
 <html>
 <head>
     <title>Create Staff</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr@4.6.6/dist/flatpickr.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/clockpicker/0.0.7/bootstrap-clockpicker.min.css">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/flatpickr@4.6.6/dist/flatpickr.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/clockpicker/0.0.7/bootstrap-clockpicker.min.js"></script>
+    <style>
+        header {
+            padding: 10px;
+            text-align: center;
+            font-size: 35px;
+            color: hsl(0, 71%, 1%);
+        }
+        nav {
+            margin: 20px 0;
+        }
+        nav a {
+            margin: 0 15px;
+            color: rgb(11, 4, 4);
+            text-decoration: none;
+        }
+    </style>
+    <style>
+        table, th, td {
+          border:1px solid black;
+        }
+        </style>
 </head>
 <body>
-    <h1>Create staff</h1>
-    <form action="/create_staff" method="post">
-        <label for="name">Name:</label>
-        <input type="text" id="name" name="name" required><br><br>
-
-        <label for="phone">Phone:</label>
-        <input type="text" id="phone" name="phone" required><br><br>
-
-        <label for="email">Email:</label>
-        <input type="email" id="email" name="email" required><br><br>
-
-        <label for="department">Department:</label>
-        <input type="text" id="department" name="department" required><br><br>
-
-        <label for="pod_id">Pod ID:</label>
-        <input type="text" id="pod_id" name="pod_id" required><br><br>
-
-        <label for="dob">Date of Birth:</label>
-        <input type="date" id="dob" name="dob" required><br><br>
-
-        <label for="blood_group">Blood Group:</label>
-        <input type="text" id="blood_group" name="blood_group" required><br><br>
-
-        <label for="profile_pic_url">Profile Picture URL:</label>
-        <input type="text" id="profile_pic_url" name="profile_pic_url"><br><br>
-
-        <label for="address">Address:</label>
-        <input type="text" id="address" name="address" required><br><br>
-
-        <h2>Family</h2>
-        <label for="father_name">Father's Name:</label>
-        <input type="text" id="father_name" name="family_father_name" required><br><br>
-
-        <label for="mother_name">Mother's Name:</label>
-        <input type="text" id="mother_name" name="family_mother_name" required><br><br>
-
-        <label for="spouse_name">Spouse's Name:</label>
-        <input type="text" id="spouse_name" name="family_spouse_name"><br><br>
-
-        <label for="sibling_name">Sibling's Name:</label>
-        <input type="text" id="sibling_name" name="family_sibling_name"><br><br>
-
-        <label for="child_name">Child's Name:</label>
-        <input type="text" id="child_name" name="family_child_name"><br><br>
-
-        <label for="designation">Designation:</label>
-        <input type="text" id="designation" name="designation" required><br><br>
-
-        <label for="emp_id">Employee ID:</label>
-        <input type="text" id="emp_id" name="emp_id" required><br><br>
-
-        <h2>Bank Data</h2>
-        <label for="acc_no">Account Number:</label>
-        <input type="text" id="acc_no" name="bank_data_acc_no" required><br><br>
-
-        <label for="acc_holder_name">Account Holder Name:</label>
-        <input type="text" id="acc_holder_name" name="bank_data_acc_holder_name" required><br><br>
-
-        <label for="branch">Branch:</label>
-        <input type="text" id="branch" name="bank_data_branch" required><br><br>
-
-        <label for="ifsc_code">IFSC Code:</label>
-        <input type="text" id="ifsc_code" name="bank_data_ifsc_code" required><br><br>
-
-        <label for="acc_type">Account Type:</label>
-        <input type="text" id="acc_type" name="bank_data_acc_type" required><br><br>
-
-        <label for="mode_of_transport">Mode of Transport:</label>
-        <input type="text" id="mode_of_transport" name="mode_of_transport" required><br><br>
-
-        <label for="laptop">Laptop:</label>
-        <input type="text" id="laptop" name="laptop"><br><br>
-
-        <h2>Government ID</h2>
-        <label for="aadhar_no">Aadhar Number:</label>
-        <input type="text" id="aadhar_no" name="government_id_aadhar_no" required><br><br>
-
-        <label for="pan_no">PAN Number:</label>
-        <input type="text" id="pan_no" name="government_id_pan_no" required><br><br>
-
-        <label for="role">Role:</label>
-        <input type="text" id="role" name="role" required><br><br>
-
-        <label for="role">Password:</label>
-        <input type="Password" id="Password" name="Password" required><br><br>
-
-
-        <input type="submit" name="staffcreate" value="Create staff">
-    </form>
-    <form action="/schedule" method="post">
-
-        <label for="type">Client ID:</label><br>
-        <input type="text" id="clientid" name="clientid" required><br><br>
-
-        <label for="type">Type:</label><br>
-        <input type="text" id="type" name="type" required><br><br>
-
-        <label for="pod_id">Pod Id:</label><br>
-        <input type="text" id="pod_id" name="pod_id" required><br><br>
-
-        <label for="notes">Notes:</label><br>
-        <textarea id="notes" name="notes" rows="4" cols="50" required></textarea><br><br>
-        
-        <label for="date">Date:</label><br>
-        <input type="date" id="date" name="date"><br>
-
-        <label for="time">Time:</label><br>
-        <input type="time" id="time" name="time"><br>
-
-        <input type="submit" value="Submit">
-    </form>
+    <nav>
+        {% if role == "superadmin" %}
+            <a href="/get_data">Home</a>
+            <a href="/create_staff">Create Staff</a>
+            <a href="/createclient">Create Client</a>
+            <a href="/schedule">Schedule</a>
+            <a href="/logout">Logout</a>
+        {% elif role == "admin" %}
+            <a href="/get_data">Home</a>
+            <a href="/createclient">Create Client</a>
+            <a href="/schedule">Schedule</a>
+            <a href="/logout">Logout</a>
+        {% else %}
+            <a href="/get_data">Home</a>
+            <a href="/logout">Logout</a>
+        {% endif %}
+    </nav>
+    {%if name%}
+    <h3>Hi {{name}}</h3>
+    {%endif%}
+    <br><br>
+    <table style="width:50%">
+        <tr>
+          <th>Phone Number</th>
+          <th>Name</th>
+          <th>Place</th>
+          <th>Enquire</th>
+          <th>Notes</th>
+          <th>state</th>
+        </tr>
+        {% for number,name,city,enquire,notes,state in dataall %}
+        <tr>
+          <td>{{number}}</td>
+          <td>{{name}}</td>
+          <td>{{city}}</td>
+          <td>{{enquire}}</td>
+          <td>{{notes}}</td>
+          <td>{{state}}</td>
+        </tr>
+        {% endfor %}
+    </table>    
 </body>
 </html>
