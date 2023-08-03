@@ -57,13 +57,57 @@
         <input type="submit" value="Submit">
     </form>
     <br><br>
-    <form method="POST" action="/addnotes">
-        <label for="pr_user_id">Pr User ID:</label>
+    <form method="POST" action="post">
+        <label for="pr_user_id">Customer Number:</label>
         <input type="text" id="pr_user_id" name="pr_user_id" required><br><br>
     
         <label for="notes">Notes:</label>
         <textarea id="notes" name="notes" rows="4" cols="50" required></textarea><br><br>
     
+        <input type="submit" value="Submit">
+    </form>
+
+    <form action="/statuschange" method="post">
+        <label for="clientid">Customer Number:</label>
+        <input type="text" id="clientid" name="clientid" required><br><br>
+    
+        <select id="notes" name="state" required>
+            <option value="">Select status</option>
+            <option value="Following Up">Following UP</option>
+            <option value="Under Construction">Under Construction</option>
+            <option value="Installation">Installation</option>
+            <option value="completed">Completd</option>
+        </select><br><br>
+
+        <label for="reason">Reason:</label>
+        <input type="text" id="reason" name="reason" required><br><br>
+
+        <input type="submit" value="Submit">
+    </form>
+    <br>
+
+    <form action="/client_search" method="POST">
+        <label for="reason">Search:</label>
+        <input type="text" id="search" name="clientnumber" required>
+        <input type="submit" value="Submit">
+    </form>
+
+    <form action="/payment_details" method="POST" >
+        <label for="pr_user_id">Customer Number:</label>
+        <input type="text" id="customerid" name="customerid" required><br><br>
+
+        <label for="pr_user_id">payment_id:</label>
+        <input type="text" id="payment_id" name="payment_id" required><br><br>
+
+        <label for="pr_user_id">amount:</label>
+        <input type="text" id="amount" name="amount" required><br><br>
+
+        <label for="pr_user_id">paid_for:</label>
+        <input type="text" id="paid_for" name="paid_for" required><br><br>
+
+        <label for="pr_user_id">pending_payment:</label>
+        <input type="text" id="pending_payment" name="pending_payment" required><br><br>
+        
         <input type="submit" value="Submit">
     </form>
 </body>

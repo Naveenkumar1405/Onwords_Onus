@@ -2,6 +2,11 @@
 <html>
 <head>
     <title>Create Staff</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr@4.6.6/dist/flatpickr.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/clockpicker/0.0.7/bootstrap-clockpicker.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr@4.6.6/dist/flatpickr.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clockpicker/0.0.7/bootstrap-clockpicker.min.js"></script>
 </head>
 <body>
     <h1>Create staff</h1>
@@ -93,17 +98,27 @@
 
         <input type="submit" name="staffcreate" value="Create staff">
     </form>
-    <form method="POST" action="/schedules">
-        <label for="pr_uid">Pr UID:</label>
-        <input type="text" id="pr_uid" name="pr_uid" required><br><br>
-    
-        <label for="state">State:</label>
-        <input type="text" id="state" name="state" required><br><br>
-    
-        <label for="reason">Reason:</label>
-        <input type="text" id="reason" name="reason" required><br><br>
-    
-        <input type="submit" name="schedulesubmit" value="Submit">
+    <form action="/schedule" method="post">
+
+        <label for="type">Client ID:</label><br>
+        <input type="text" id="clientid" name="clientid" required><br><br>
+
+        <label for="type">Type:</label><br>
+        <input type="text" id="type" name="type" required><br><br>
+
+        <label for="pod_id">Pod Id:</label><br>
+        <input type="text" id="pod_id" name="pod_id" required><br><br>
+
+        <label for="notes">Notes:</label><br>
+        <textarea id="notes" name="notes" rows="4" cols="50" required></textarea><br><br>
+        
+        <label for="date">Date:</label><br>
+        <input type="date" id="date" name="date"><br>
+
+        <label for="time">Time:</label><br>
+        <input type="time" id="time" name="time"><br>
+
+        <input type="submit" value="Submit">
     </form>
 </body>
 </html>

@@ -1,7 +1,7 @@
 import requests
 from flask import Flask, render_template, redirect, request, session,url_for,make_response
 from flask_session import Session
-
+from datetime import datetime
 app = Flask(__name__)
 app.config["SESSION_PERMANENT"] = True
 app.config["SESSION_TYPE"] = "filesystem"
@@ -24,39 +24,30 @@ def signin():
             "email": email,
             "password": password
         }
-        print(f"Trying to login with email: {email} and password: {password}")
 
         try:
-            print("inside try")
             response = requests.post(url="http://192.168.1.91:8000/staff/login", json=data)
-            response_data = response.json()  
-            print("==============",response_data)
+            response_data = response.json()
             if response.status_code == 200:
-                print(f"Login successful, received uid: {response_data}")
                 session['uid'] = response_data
                 resp = redirect(url_for('get_data'))
                 resp.set_cookie('uid', str(response_data))
-                print("Cookie set:", resp.headers.get('Set-Cookie'))
                 return resp
             else:
-                print(f"Received status code: {response.status_code}, response: {response_data}")
                 raise Exception('Invalid response')
         except Exception as e:
-            print(f"Exception during login: {e}")
             message = "Server Down"
             return render_template('signin.html', message=message)
     else:
-        return render_template('signin.html')    
+        return render_template('signin.html')
 
 @app.route('/get_data', methods=['GET', 'POST'])
 def get_data():
     try:
         uid = request.cookies.get('uid')
-        print("get",uid)
         fastapi_url ="http://192.168.1.91:8000/staff/data"
         try:
             response = requests.post(url=fastapi_url, json={'uid': uid}) 
-            print("success")
             response=response.json()
             name=response["name"]
             return render_template('staffdashboard.html',message=name)
@@ -65,19 +56,31 @@ def get_data():
             return render_template('staffdashboard.html',message=message)
     except:
         return redirect(url_for("login"))
+
+def convert_to_timestamp(date, time):
+    dt_string = date + " " + time
+    dt_object = datetime.strptime(dt_string, '%Y-%m-%d %H:%M:%S')
     
+    timestamp = dt_object.timestamp()
+    return timestamp
+
 @app.route('/schedule', methods=['GET', 'POST'])
 def schedules():
     if request.method == 'POST':
-        pr_uid = request.form['pr_uid']
-        state = request.form['state']
-        reason = request.form['reason']
+        clientid=request.form['clientid']
+        type = request.form['type']
+        pod_id = request.form['pod_id']
+        notes = request.form['notes']
+        date = request.form['date']
+        time = request.form['time']+":00"
+        timestamp = convert_to_timestamp(date, time)
         schedule = {
-            "pr_uid": pr_uid,
-            "state": state,
-            "reason": reason
+            "type": type,
+            "pod_id": pod_id,
+            "notes": notes,
+            "date_and_time":timestamp
         }
-        fastapi_url = "http://192.168.1.91:8000/create_staff"
+        fastapi_url = f"http://192.168.1.91:8000/client/{clientid}/create_schedule"
         try:
             response = requests.post(url=fastapi_url, json=schedule)
             return render_template('admindashboard.html',message=response.json())
@@ -164,22 +167,19 @@ def staffcreate():
             response = requests.post(url=fastapi_url, json=staff)
             return render_template('admindashboard.html',message=response)
         except:
-            print("+++++++++++++++++++++++++")
             message="Server Down"
             return render_template('admindashboard.html',message=message)
     else:
-        return render_template('admindashboard.html') 
-
-
- 
+        return render_template('admindashboard.html')
 
 @app.route('/addnotes', methods=['GET', 'POST'])
 def addnotes():
     if request.method == 'POST':
+        uid = request.cookies.get('uid')
         pr_user_id = request.form['pr_user_id']
         notes = request.form['notes']
         notes = {
-            "pr_user_id": "Anitha",
+            "pr_user_id": uid,
             "notes": notes
         }
         
@@ -194,9 +194,73 @@ def addnotes():
             message="Server Down"
             return render_template('staffdashboard.html',message=message)
     else:
-        return render_template('staffdashboard.html')   
+        return render_template('staffdashboard.html')
 
+@app.route('/client_search', methods=['GET', 'POST'])
+def client_search():
+    if request.method == 'POST':
+        clientid = request.form['clientnumber']
+        fastapi_url = f"http://192.168.1.91:8000/client/{clientid}"
+        try:
+            response = requests.get(url=fastapi_url)
+            return render_template('staffdashboard.html',message=response.json())
+        except:
+            message="Server Down"
+            return render_template('staffdashboard.html',message=message)
+    else:
+        return render_template('staffdashboard.html')
 
+@app.route('/payment_details', methods=['GET', 'POST'])
+def client_payment():
+    if request.method == 'POST':
+        uid = request.cookies.get('uid')
+        customerid = request.form['customerid']
+        payment_id = request.form['payment_id']
+        amount = request.form['amount']
+        paid_for = request.form['paid_for']
+        pending_payment = request.form['pending_payment']
+        timestamp = datetime.now().timestamp()
+        payment={
+        "payment_id": payment_id,
+        "payment_time": timestamp,
+        "amount": amount,
+        "paid_for": paid_for,
+        "pending_payment": pending_payment,
+        "uid": uid
+        }
+        fastapi_url = f"http://192.168.1.91:8000/client/{customerid}/payments"
+        try:
+            response = requests.post(url=fastapi_url, json=payment)
+            return render_template('staffdashboard.html',message=response.json())
+        except:
+            message="Server Down"
+            return render_template('staffdashboard.html',message=message)
+    else:
+        return render_template('staffdashboard.html')
+
+@app.route('/statuschange', methods=['GET', 'POST'])
+def statuschange():
+    if request.method == 'POST':
+        pr_uid = request.cookies.get('uid')
+        clientid = request.form['clientid']
+        state = request.form['state']
+        reason = request.form['reason']
+        status={
+        "pr_uid":pr_uid ,
+        "state":state,
+        "reason": reason
+        }
+
+        fastapi_url = f"http://192.168.1.91:8000/client/{clientid}/sts/{state}"
+        try:
+            response = requests.post(url=fastapi_url, json=status)
+            return render_template('staffdashboard.html',message=response.json())
+        except:
+            message="Server Down"
+            return render_template('staffdashboard.html',message=message)
+    else:
+        return render_template('staffdashboard.html')
+    
 @app.route('/createclient', methods=['GET', 'POST'])
 def clientcreate():
     if request.method == 'POST':
@@ -247,7 +311,7 @@ def clientcreate():
             message="Server Down"
             return render_template('staffdashboard.html',message=message)
     else:
-        return render_template('staffdashboard.html')   
+        return render_template('staffdashboard.html')
 
 if __name__ == '__main__':
     app.run(debug=True, port=8000)
