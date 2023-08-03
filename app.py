@@ -26,7 +26,7 @@ def signin():
         }
         print(email,password)
         try:
-            response = requests.post(url="http://192.168.1.91:8000/staff/login", json=data)
+            response = requests.post(url="http://192.168.128.87:8000/staff/login", json=data)
             response_data = response.json()
             if response.status_code == 200:
                 print("cookies set",response_data)
@@ -47,8 +47,8 @@ def get_data():
     try:
         uid = request.cookies.get('uid')
         print(uid)
-        fastapi_url ="http://192.168.1.91:8000/staff/data"
-        customer_url ="http://192.168.1.91:8000/cust/data"
+        fastapi_url ="http://192.168.128.87:8000/staff/data"
+        customer_url ="http://192.168.128.87:8000/cust/data"
         try:
             response = requests.post(url=fastapi_url, json={'uid': uid})
             customer = requests.post(url=customer_url, json={'uid': uid})
@@ -111,7 +111,7 @@ def schedules():
             "notes": notes,
             "date_and_time":timestamp
         }
-        fastapi_url = f"http://192.168.1.91:8000/client/{clientid}/create_schedule"
+        fastapi_url = f"http://192.168.128.87:8000/client/{clientid}/create_schedule"
         try:
             response = requests.post(url=fastapi_url, json=schedule)
             return render_template('schedule.html',message=response.json())
@@ -197,7 +197,7 @@ def staffcreate():
             "role": role,
             "password":password
         }
-        fastapi_url = "http://192.168.1.91:8000/create_staff"
+        fastapi_url = "http://192.168.128.87:8000/create_staff"
         try:
             response = requests.post(url=fastapi_url, json=staff)
             return render_template('createstaff.html',message=response)
@@ -219,7 +219,7 @@ def addnotes():
         }
         
         # URL of the FastAPI endpoint
-        fastapi_url = f"http://192.168.1.91:8000/client/{pr_user_id}/add_notes"
+        fastapi_url = f"http://192.168.128.87:8000/client/{pr_user_id}/add_notes"
 
         # Make an HTTP POST request to the FastAPI endpoint
         try:
@@ -235,7 +235,7 @@ def addnotes():
 def client_search():
     if request.method == 'POST':
         clientid = request.form['clientnumber']
-        fastapi_url = f"http://192.168.1.91:8000/client/{clientid}"
+        fastapi_url = f"http://192.168.128.87:8000/client/{clientid}"
         try:
             response = requests.get(url=fastapi_url)
             return render_template('staffdashboard.html',message=response.json())
@@ -263,7 +263,7 @@ def client_payment():
         "pending_payment": pending_payment,
         "uid": uid
         }
-        fastapi_url = f"http://192.168.1.91:8000/client/{customerid}/payments"
+        fastapi_url = f"http://192.168.128.87:8000/client/{customerid}/payments"
         try:
             response = requests.post(url=fastapi_url, json=payment)
             return render_template('payment.html',message=response.json())
@@ -286,7 +286,7 @@ def statuschange():
         "reason": reason
         }
 
-        fastapi_url = f"http://192.168.1.91:8000/client/{clientid}/sts/{state}"
+        fastapi_url = f"http://192.168.128.87:8000/client/{clientid}/sts/{state}"
         try:
             response = requests.post(url=fastapi_url, json=status)
             return render_template('statuschange.html',message=response.json())
@@ -336,7 +336,7 @@ def clientcreate():
         }
         
         # URL of the FastAPI endpoint
-        fastapi_url = "http://192.168.1.91:8000/create_client"
+        fastapi_url = "http://192.168.128.87:8000/create_client"
 
         # Make an HTTP POST request to the FastAPI endpoint
         try:
