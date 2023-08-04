@@ -62,6 +62,17 @@
 </div>
 
 <div style="padding:20px;margin-top:30px;height:1500px;">
+
+    <form action="/" id="lead-incharge" name="state" method="post">
+    <label for="lead-in">Select State</label>
+        <select name="state" id="lead-in" onchange="leadIn()">
+        <option value="">select</option>
+        {% for state in client_state %}
+        <option value="{{ state }}">{{ state }}</option>
+        {% endfor %}
+        </select>  
+    </form>
+    
   <h1>New Clients</h1>
 
       <table>
@@ -81,6 +92,10 @@
     {% endfor %}
   </table>
 </div>
-
+<script>
+   function leadIn() {
+          document.getElementById("lead-incharge").submit();
+        }
+  </script>
 </body>
 </html>

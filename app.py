@@ -13,7 +13,7 @@ app.config["SESSION_PERMANENT"] = True
 app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
 
-fast_api_server_ip = "192.168.1.16:8000"
+fast_api_server_ip = "192.168.1.91:8000"
 
 env = Environment(autoescape=select_autoescape(['html', 'xml']))
 env.globals.update(zip=zip)
@@ -136,22 +136,30 @@ def pod():
         return render_template('pod.html', staff_zip=staff_zip)
 
 
-@app.route('/')
+@app.route('/', methods=['GET', 'POST'])
 def home():
     try:
         uid = request.cookies.get('uid')
         if uid:
-            print(uid)
+            print(request.method)
             user_name = requests.post(f"http://{fast_api_server_ip}/staff/data", json={'uid': uid}).json()
             pod = requests.get(f"http://{fast_api_server_ip}/staff/pod/{uid}").json()
             new_client_data = requests.get(f"http://{fast_api_server_ip}/client/pod/{pod}").json()
-            print(new_client_data)
+            client_state=requests.get(f"http://{fast_api_server_ip}/client/state/").json()
+            if request.method == "POST":
+                print("===========")
+                state=request.form.get("state")
+                new_client_data=requests.post(f"http://{fast_api_server_ip}/client/getstate/{state}/{pod}").json()
+                print(new_client_data)
+                return render_template('homepage.html', username=user_name['name'], role=user_name['role'], pod=pod,
+                                   new_client_data=new_client_data,client_state=client_state)
             return render_template('homepage.html', username=user_name['name'], role=user_name['role'], pod=pod,
-                                   new_client_data=new_client_data)
+                                   new_client_data=new_client_data,client_state=client_state)
         else:
             print(f"Uid not found. giving login page")
             return redirect('/signin')
-    except:
+    except Exception as e:
+        print("error",e)
         pass
 
 
@@ -438,4 +446,4 @@ def clientcreate():
 
 
 if __name__ == '__main__':
-    app.run(debug=True, host='192.168.1.16', port=8182)
+    app.run(debug=True, host='0.0.0.0', port=8182)
