@@ -9,7 +9,7 @@
     <script src='main.js'></script>
 </head>
 <body>
-    <form action="/createclient" method="post">
+    <form action="/create_client" method="post">
         <label for="name">Name:</label>
         <input type="text" id="name" name="name" required><br><br>
         
@@ -38,8 +38,14 @@
         <label for="rating">Rating:</label>
         <input type="text" id="rating" name="rating"><br><br>
         
-        <label for="pod_id">Pod ID:</label>
-        <input type="text" id="pod_id" name="pod_id"><br><br>
+<!--        <label for="pod_id">Pod ID:</label>-->
+<!--        <input type="text" id="pod_id" name="pod_id"><br><br>-->
+
+        Select pod : <select id="pod_id" name="pod_id">
+        {% for option in pod_names %}
+            <option value="{{option}}">{{option}}</option>
+        {% endfor %}
+        </select>
         
         <h3>Enquiry</h3>
         <label for="lead_source">Lead Source:</label>

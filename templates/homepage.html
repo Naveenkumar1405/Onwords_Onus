@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Onwords IoT Company Dashboard</title>
+    <style>
+        .navbar {
+            overflow: hidden;
+            background-color: #333;
+        }
+
+        .navbar a {
+            float: left;
+            display: block;
+            color: #f2f2f2;
+            text-align: center;
+            padding: 14px 16px;
+            text-decoration: none;
+            font-size: 17px;
+        }
+
+        .navbar a:hover {
+            background-color: #ddd;
+            color: black;
+        }
+    </style>    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            font-size: 0.9em;
+            font-family: sans-serif;
+            min-width: 400px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+        }
+        thead tr {
+            background-color: #009879;
+            color: #ffffff;
+            text-align: left;
+        }
+        th, td {
+            padding: 12px 15px;
+        }
+        tbody tr {
+            border-bottom: 1px solid #dddddd;
+        }
+        tbody tr:nth-of-type(even) {
+            background-color: #f3f3f3;
+        }
+        tbody tr:last-of-type {
+            border-bottom: 2px solid #009879;
+        }
+    </style>
+</head>
+<body>
+
+<div class="navbar">
+  <a href="create_staff">Create Staff</a>
+  <a href="create_client">Create Client</a>
+  <a href="pod">Pod</a>
+  <a href="logout" style="float:right">Logout</a>
+  <p style="float:right;margin:15px;color:#f2f2f2;">Welcome, {{ username }}, Role = {{role}}, pod = {{pod}}</p>
+</div>
+
+<div style="padding:20px;margin-top:30px;height:1500px;">
+  <h1>New Clients</h1>
+
+      <table>
+    <tr>
+        <th>Name</th>
+        <th>Phone</th>
+        <th>Pod ID</th>
+        <th>Rating</th>
+    </tr>
+    {% for client in new_client_data %}
+    <tr>
+        <td>{{ client.name }}</td>
+        <td>{{ client.phone }}</td>
+        <td>{{ client.pod_id }}</td>
+        <td>{{ client.rating }}</td>
+    </tr>
+    {% endfor %}
+  </table>
+</div>
+
+</body>
+</html>
