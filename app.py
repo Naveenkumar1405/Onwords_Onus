@@ -1,12 +1,7 @@
-import time
-
 import requests
 from flask import Flask, render_template, redirect, request, session, url_for, make_response, flash
-
 import functions
 from flask_session import Session
-from datetime import datetime
-from jinja2 import Environment, select_autoescape
 
 app = Flask(__name__)
 app.config["SESSION_PERMANENT"] = True
@@ -14,9 +9,6 @@ app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
 
 fast_api_server_ip = "192.168.1.16:8000"
-
-env = Environment(autoescape=select_autoescape(['html', 'xml']))
-env.globals.update(zip=zip)
 
 
 @app.route('/signin', methods=['GET', 'POST'])
@@ -53,52 +45,6 @@ def signin():
     else:
         return render_template('signin.html')
 
-
-# @app.route('/get_data', methods=['GET', 'POST'])
-# def get_data():
-#     try:
-#         uid = request.cookies.get('uid')
-#         print(uid)
-#         fastapi_url = f"http://{fast_api_server_ip}:8000/staff/data"
-#         customer_url = f"http://{fast_api_server_ip}:8000/cust/data"
-#         try:
-#             response = requests.post(url=fastapi_url, json={'uid': uid})
-#             customer = requests.post(url=customer_url, json={'uid': uid})
-#             response = response.json()
-#             customer = customer.json()
-#             print(response)
-#             print(customer)
-#             customernumber = []
-#             customername = []
-#             customerplace = []
-#             customerenquire = []
-#             customernotes = []
-#             customerstate = []
-#             for sublist in customer:
-#                 for item in sublist:
-#                     if isinstance(item, dict):
-#                         customernumber.append(item["phone"])
-#                         print(item["phone"])
-#                         customername.append(item["name"])
-#                         customerplace.append(item["address"]["city"])
-#                         customerenquire.append(item["enquiry"]["enquired_for"])
-#                         customernotes.append(item["notes"])
-#                     elif isinstance(item, str):
-#                         customerstate.append(item)
-#             name = response["name"]
-#             role = response["role"]
-#             dataall = zip(customernumber, customername, customerplace, customerenquire, customernotes, customerstate)
-#             if role == "superadmin":
-#                 return render_template('admindashboard.html', name=name, role=role)
-#             elif role == "admin":
-#                 return render_template('admindashboard.html', name=name, role=role)
-#             else:
-#                 return render_template('admindashboard.html', name=name, role=role, dataall=dataall)
-#         except:
-#             message = "Server Down"
-#             return render_template('admindashboard.html', message=message)
-#     except:
-#         return redirect(url_for("login"))
 
 @app.route('/pod', methods=['GET', 'POST'])
 def pod():
@@ -145,73 +91,65 @@ def home():
             user_name = requests.post(f"http://{fast_api_server_ip}/staff/data", json={'uid': uid}).json()
             pod = requests.get(f"http://{fast_api_server_ip}/staff/pod/{uid}").json()
             new_client_data = requests.get(f"http://{fast_api_server_ip}/client/pod/{pod}").json()
-            client_state=requests.get(f"http://{fast_api_server_ip}/client/state/").json()
+            client_state = requests.get(f"http://{fast_api_server_ip}/client/state/").json()
+
+            resp = None
             if request.method == "POST":
                 print("===========")
-                state=request.form.get("state")
-                new_client_data=requests.post(f"http://{fast_api_server_ip}/client/getstate/{state}/{pod}").json()
+                state = request.form.get("state")
+                new_client_data = requests.post(f"http://{fast_api_server_ip}/client/getstate/{state}/{pod}").json()
                 print(new_client_data)
-                return render_template('homepage.html', username=user_name['name'], role=user_name['role'], pod=pod,
-                                   new_client_data=new_client_data,client_state=client_state)
-            return render_template('homepage.html', username=user_name['name'], role=user_name['role'], pod=pod,
-                                   new_client_data=new_client_data,client_state=client_state)
+                resp = make_response(
+                    render_template('homepage.html', username=user_name['name'], role=user_name['role'], pod=pod,
+                                    new_client_data=new_client_data, client_state=client_state))
+            else:
+                resp = make_response(
+                    render_template('homepage.html', username=user_name['name'], role=user_name['role'], pod=pod,
+                                    new_client_data=new_client_data, client_state=client_state))
+
+            # Set cookies
+            resp.set_cookie('user_name', str(user_name['name']), max_age=60 * 60 * 24 * 365 * 2)
+            resp.set_cookie('user_role', str(user_name['role']), max_age=60 * 60 * 24 * 365 * 2)
+            resp.set_cookie('user_pod', str(pod), max_age=60 * 60 * 24 * 365 * 2)
+
+            return resp
+
         else:
             print(f"Uid not found. giving login page")
             return redirect('/signin')
+
     except Exception as e:
-        print("error",e)
-        pass
+        print("error", e)
 
 
-def convert_to_timestamp(date, time):
-    dt_string = date + " " + time
-    dt_object = datetime.strptime(dt_string, '%Y-%m-%d %H:%M:%S')
+@app.route('/client/profile', methods=['GET', 'POST'])
+def client_profile():
+    if request.method == 'GET':
+        return render_template("client_profile.html")
+    else:
+        print(request.form)
+        print("printed the form______________________")
+        client_number = request.form.get('client_number')
+        print(client_number)
+        client_data = requests.get(f"http://{fast_api_server_ip}/client/{client_number}").json()
+        print(client_data)
 
-    timestamp = dt_object.timestamp()
-    return timestamp
+        res=make_response(render_template("client_profile.html",client_number=client_number,client=client_data))
 
 
-#
-# @app.route('/schedule', methods=['GET', 'POST'])
-# def schedules():
-#     if request.method == 'POST':
-#         clientid = request.form['clientid']
-#         type = request.form['type']
-#         pod_id = request.form['pod_id']
-#         notes = request.form['notes']
-#         date = request.form['date']
-#         time = request.form['time'] + ":00"
-#         timestamp = convert_to_timestamp(date, time)
-#         schedule = {
-#             "type": type,
-#             "pod_id": pod_id,
-#             "notes": notes,
-#             "date_and_time": timestamp
-#         }
-#         fastapi_url = f"http://{fast_api_server_ip}:8000/client/{clientid}/create_schedule"
-#         try:
-#             response = requests.post(url=fastapi_url, json=schedule)
-#             return render_template('schedule.html', message=response.json())
-#         except:
-#             message = "Server Down"
-#             return render_template('schedule.html', message=message)
-#     else:
-#         return render_template('schedule.html')
-#
-#
+
 @app.route('/logout')
 def logout():
     session.pop('uid', None)
+    session.pop('user_name',None)
+    session.pop('user_role',None)
+    session.pop('user_pod',None)
     resp = redirect(url_for('signin'))
     resp.delete_cookie('uid')
+    resp.delete_cookie('user_name')
+    resp.delete_cookie('user_role')
+    resp.delete_cookie('user_pod')
     return redirect(url_for("signin"))
-
-
-#
-#
-# @app.route('/admindashboard', methods=['GET', 'POST'])
-# def admin():
-#     return render_template("admindashboard.html")
 
 
 @app.route('/create_staff', methods=['GET', 'POST'])
@@ -221,7 +159,6 @@ def staffcreate():
         phone = request.form['phone']
         email = request.form['email']
         department = request.form['department']
-        # pod_id = request.form['pod_id']
         dob = request.form['dob']
         blood_group = request.form['blood_group']
         profile_pic_url = request.form['profile_pic_url']
@@ -292,31 +229,6 @@ def staffcreate():
         return render_template('createstaff.html')
 
 
-# @app.route('/addnotes', methods=['GET', 'POST'])
-# def addnotes():
-#     if request.method == 'POST':
-#         uid = request.cookies.get('uid')
-#         pr_user_id = request.form['pr_user_id']
-#         notes = request.form['notes']
-#         notes = {
-#             "pr_user_id": uid,
-#             "notes": notes
-#         }
-#
-#         # URL of the FastAPI endpoint
-#         fastapi_url = f"http://{fast_api_server_ip}/client/{pr_user_id}/add_notes"
-#
-#         # Make an HTTP POST request to the FastAPI endpoint
-#         try:
-#             response = requests.post(url=fastapi_url, json=notes)
-#             return render_template('addnotes.html', message=response.json())
-#         except:
-#             message = "Server Down"
-#             return render_template('addnotes.html', message=message)
-#     else:
-#         return render_template('addnotes.html')
-
-
 @app.route('/client_search', methods=['GET', 'POST'])
 def client_search():
     if request.method == 'POST':
@@ -330,35 +242,6 @@ def client_search():
             return render_template('staffdashboard.html', message=message)
     else:
         return render_template('staffdashboard.html')
-
-
-# @app.route('/payment_details', methods=['GET', 'POST'])
-# def client_payment():
-#     if request.method == 'POST':
-#         uid = request.cookies.get('uid')
-#         customerid = request.form['customerid']
-#         payment_id = request.form['payment_id']
-#         amount = request.form['amount']
-#         paid_for = request.form['paid_for']
-#         pending_payment = request.form['pending_payment']
-#         timestamp = datetime.now().timestamp()
-#         payment = {
-#             "payment_id": payment_id,
-#             "payment_time": timestamp,
-#             "amount": amount,
-#             "paid_for": paid_for,
-#             "pending_payment": pending_payment,
-#             "uid": uid
-#         }
-#         fastapi_url = f"http://{fast_api_server_ip}:8000/client/{customerid}/payments"
-#         try:
-#             response = requests.post(url=fastapi_url, json=payment)
-#             return render_template('payment.html', message=response.json())
-#         except:
-#             message = "Server Down"
-#             return render_template('payment.html', message=message)
-#     else:
-#         return render_template('payment.html')
 
 
 @app.route('/statuschange', methods=['GET', 'POST'])
@@ -434,7 +317,7 @@ def clientcreate():
             print(response)
             pod_name_list = functions.get_all_pod_names()
 
-            return render_template('clientcreate.html', message=response.json(),pod_names=pod_name_list)
+            return render_template('clientcreate.html', message=response.json(), pod_names=pod_name_list)
         except:
             message = "Server Down"
             return render_template('clientcreate.html', message=message)

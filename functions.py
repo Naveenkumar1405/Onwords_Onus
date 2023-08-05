@@ -1,6 +1,6 @@
 import requests
 from app import fast_api_server_ip
-
+from datetime import datetime
 
 def get_client_data_tagged_to_staff_by_uid(uid):
     pass
@@ -13,3 +13,10 @@ def get_all_staff_name():
 def get_all_pod_names():
     return requests.get(f"http://{fast_api_server_ip}/pod/names").json()
 
+
+def convert_to_timestamp(date, time):
+    dt_string = date + " " + time
+    dt_object = datetime.strptime(dt_string, '%Y-%m-%d %H:%M:%S')
+
+    timestamp = dt_object.timestamp()
+    return timestamp

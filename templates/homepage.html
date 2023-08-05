@@ -22,7 +22,8 @@
             background-color: #ddd;
             color: black;
         }
-    </style>    <style>
+    </style>
+    <style>
         table {
             width: 100%;
             border-collapse: collapse;
@@ -54,8 +55,10 @@
 <body>
 
 <div class="navbar">
+  <a href="/">Home Page</a>
   <a href="create_staff">Create Staff</a>
   <a href="create_client">Create Client</a>
+  <a href="client/profile">Client Profile</a> <!-- Here is the new addition -->
   <a href="pod">Pod</a>
   <a href="logout" style="float:right">Logout</a>
   <p style="float:right;margin:15px;color:#f2f2f2;">Welcome, {{ username }}, Role = {{role}}, pod = {{pod}}</p>
@@ -76,26 +79,46 @@
   <h1>New Clients</h1>
 
       <table>
-    <tr>
-        <th>Name</th>
-        <th>Phone</th>
-        <th>Pod ID</th>
-        <th>Rating</th>
-    </tr>
-    {% for client in new_client_data %}
-    <tr>
-        <td>{{ client.name }}</td>
-        <td>{{ client.phone }}</td>
-        <td>{{ client.pod_id }}</td>
-        <td>{{ client.rating }}</td>
-    </tr>
-    {% endfor %}
-  </table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Phone</th>
+            <th>Pod ID</th>
+            <th>Rating</th>
+        </tr>
+    </thead>
+    <tbody>
+{% for client in new_client_data %}
+<tr class="clickable-row">
+    <td>{{ client.name }}</td>
+    <td>{{ client.phone }}</td>
+    <td>{{ client.pod_id }}</td>
+    <td>{{ client.rating }}</td>
+    <form class="hidden-form" action="/client/profile" method="post">
+        <input type="hidden" name="client_number" value="{{ client.phone }}">
+    </form>
+</tr>
+{% endfor %}
+
+    </tbody>
+</table>
+
 </div>
 <script>
    function leadIn() {
           document.getElementById("lead-incharge").submit();
         }
   </script>
+<script>
+    const rows = document.querySelectorAll('.clickable-row');
+    rows.forEach(row => {
+        row.addEventListener('click', function() {
+            this.querySelector('.hidden-form').submit();
+        });
+    });
+</script>
+
+
+
 </body>
 </html>
