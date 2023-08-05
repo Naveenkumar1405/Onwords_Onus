@@ -13,7 +13,7 @@ app.config["SESSION_PERMANENT"] = True
 app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
 
-fast_api_server_ip = "192.168.1.91:8000"
+fast_api_server_ip = "192.168.1.16:8000"
 
 env = Environment(autoescape=select_autoescape(['html', 'xml']))
 env.globals.update(zip=zip)
@@ -446,4 +446,4 @@ def clientcreate():
 
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=8182)
+    app.run(debug=True, host='192.168.1.16', port=8182)
