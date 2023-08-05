@@ -6,6 +6,7 @@
         .navbar {
             overflow: hidden;
             background-color: #333;
+            font-family: Arial, sans-serif;
         }
 
         .navbar a {
@@ -26,6 +27,9 @@
         .profile-details {
             font-family: Arial, sans-serif;
             margin: 15px;
+            background-color: #f2f2f2;
+            padding: 20px;
+            border-radius: 8px;
         }
 
         .profile-details h2 {
@@ -35,37 +39,140 @@
         .profile-details p {
             padding: 5px 0;
         }
+
+        .container {
+            display: flex;
+            justify-content: space-between;
+            padding: 20px 0;
+        }
+
+        .search-form {
+            flex-basis: 30%;
+            padding: 20px;
+        }
+
+        .client-details {
+            flex-basis: 70%;
+            padding: 20px;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 12px 20px;
+            margin: 8px 0;
+            box-sizing: border-box;
+            border: none;
+            background-color: #f2f2f2;
+            font-size: 16px;
+        }
+
+        input[type="submit"] {
+            background-color: #009879;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #007B57;
+        }
+
+        /* Additional CSS for the dropdown */
+        .status-row {
+            display: flex;
+            justify-content: flex-end;
+            padding-right: 20px;
+        }
+
+        select {
+            width: 200px;
+            padding: 5px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            background: #f1f1f1;
+        }
     </style>
 </head>
 <body>
 <div class="navbar">
-     <a href="/">Home Page</a>
-  <a href="/create_staff">Create Staff</a>
-  <a href="/create_client">Create Client</a>
+  <a href="/">Home</a>
+  <a href="/create_staff">Staff</a>
+  <a href="/create_client">New Client</a>
   <a href="/client/profile">Client Profile</a>
   <a href="/pod">Pod</a>
   <a href="/logout" style="float:right">Logout</a>
-  <p style="float:right;margin:15px;color:#f2f2f2;">Welcome {{ username }}, Role = {{role}}, pod = {{pod}}</p>
+  <p style="float:right;margin:15px;color:#f2f2f2;">Welcome, {{ username }}</p>
 </div>
-
-<div style="padding:20px;margin-top:30px;height:1500px;">
-    <h1>Search Client Profile</h1>
-    <form action="/client/profile" method="post">
-        <input type="text" id="client_number" name="client_number" placeholder="Enter client number">
-        <input type="submit" value="Search">
+{% if client %}
+<div class="status-row">
+    <form action="/client/profile/status" method="post">
+        <input type="hidden" name="client_number" value="{{ client_number }}">
+        <select id="status" name="status" onchange="this.form.submit()">
+            <option value="new" {% if client.status == 'new' %}selected{% endif %}>New</option>
+            <option value="interested" {% if client.status == 'interested' %}selected{% endif %}>Interested</option>
+            <option value="hot" {% if client.status == 'hot' %}selected{% endif %}>Hot</option>
+            <option value="rejected" {% if client.status == 'rejected' %}selected{% endif %}>Rejected</option>
+            <option value="installed" {% if client.status == 'installed' %}selected{% endif %}>Installed</option>
+        </select>
     </form>
-
-    {% if client %}
-    <div class="profile-details">
-        <h2>{{ client.name }}</h2>
-        <p>Phone: {{ client.phone }}</p>
-        <p>Pod ID: {{ client.pod_id }}</p>
-        <p>Rating: {{ client.rating }}</p>
-        <p>Address: {{ client.address.door_no }}, {{ client.address.street }}, {{ client.address.landmark }}, {{ client.address.city }}, {{ client.address.state }}, {{ client.address.pincode }}</p>
-        <p>Enquiry - Created by: {{ client.enquiry.created_by }}, Enquired for: {{ client.enquiry.enquired_for }}, Lead source: {{ client.enquiry.lead_source }}</p>
-        <p>Notes: {{ client.notes }}</p>
-    </div>
-    {% endif %}
 </div>
+{% endif %}
+<div class="container">
+    <div class="search-form">
+        <form action="/client/profile" method="post">
+            <input type="text" id="client_number" name="client_number" placeholder="Client number">
+            <input type="submit" value="Search">
+        </form>
+        {% if error %}
+        <p style="color: red;">{{error}}</p>
+        {% endif %}
+    </div>
+
+
+    <div class="client-details">
+        {% if client %}
+        <div class="profile-details">
+            <h2>{{ client.name }}</h2>
+
+            <p><strong>Phone:</strong> {{ client.phone }}</p>
+            <p><strong>Pod ID:</strong> {{ client.pod_id }}</p>
+            <p><strong>Rating:</strong> {{ client.rating }}</p>
+            <p><strong>Address:</strong> {{ client.address.door_no }}, {{ client.address.street }}, {{ client.address.landmark }}, {{ client.address.city }}, {{ client.address.state }}, {{ client.address.pincode }}</p>
+            <p><strong>Enquiry:</strong> Created by: {{ client.enquiry.created_by }}, Enquired for: {{ client.enquiry.enquired_for }}, Lead source: {{ client.enquiry.lead_source }}</p>
+            <p><strong>Notes:</strong> {{ client.notes }}</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+<script>
+    document.getElementById('status').addEventListener('change', function() {
+        const client_id = document.querySelector('input[name="client_number"]').value;
+        const status = this.value;
+        const url = `http://192.168.1.6:8000/client/${client_id}/sts/${status}`;
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+                // Add additional headers here if necessary, like authentication tokens
+            },
+            // If there's any data to be sent in the request body, specify it here
+        }).then(response => {
+            // Handle the response here. E.g. display a message if the request was successful
+            if(response.ok){
+                alert('Status updated successfully.');
+            } else {
+                alert('Error in updating status.')
+            }
+        }).catch(err => {
+            // Handle any errors here
+            console.error('Error: ', err);
+        });
+    });
+</script>
+
 </body>
 </html>

@@ -2,6 +2,7 @@ import requests
 from flask import Flask, render_template, redirect, request, session, url_for, make_response, flash
 import functions
 from flask_session import Session
+import logging
 
 app = Flask(__name__)
 app.config["SESSION_PERMANENT"] = True
@@ -9,6 +10,7 @@ app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
 
 fast_api_server_ip = "192.168.1.16:8000"
+logging.basicConfig(level=logging.INFO)
 
 
 @app.route('/signin', methods=['GET', 'POST'])
@@ -48,9 +50,9 @@ def signin():
 
 @app.route('/pod', methods=['GET', 'POST'])
 def pod():
-    username=request.cookies.get('user_name')
-    userrole=request.cookies.get('user_role')
-    userpod=request.cookies.get('user_pod')
+    username = request.cookies.get('user_name')
+    userrole = request.cookies.get('user_role')
+    userpod = request.cookies.get('user_pod')
     print(request.method)
     if request.method == 'POST':
         pod_name = request.form['pod_name']
@@ -73,7 +75,7 @@ def pod():
         staff_uid = staff_data[1]
         staff_zip = zip(staff_name, staff_uid)
         print(f"staff = {staff_zip}")
-        return render_template('pod.html', staff_zip=staff_zip,username=username,role=userrole,pod=userpod)
+        return render_template('pod.html', staff_zip=staff_zip, username=username, role=userrole, pod=userpod)
     else:
         print("inside post get else")
         staff_list = functions.get_all_staff_name()
@@ -82,7 +84,7 @@ def pod():
         staff_uid = staff_data[1]
         staff_zip = zip(staff_name, staff_uid)
         print(f"staff = {staff_zip}")
-        return render_template('pod.html', staff_zip=staff_zip,username=username,role=userrole,pod=userpod)
+        return render_template('pod.html', staff_zip=staff_zip, username=username, role=userrole, pod=userpod)
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -127,29 +129,58 @@ def home():
 
 @app.route('/client/profile', methods=['GET', 'POST'])
 def client_profile():
-    username=request.cookies.get('user_name')
-    userrole=request.cookies.get('user_role')
-    userpod=request.cookies.get('user_pod')
-    print("===========",username)
+    username = request.cookies.get('user_name')
+    userrole = request.cookies.get('user_role')
+    userpod = request.cookies.get('user_pod')
+
     if request.method == 'GET':
-        return render_template("client_profile.html",username=username,role=userrole,pod=userpod)
+        return render_template("client_profile.html", username=username, role=userrole, pod=userpod)
     else:
-        print(request.form)
-        print("printed the form______________________")
         client_number = request.form.get('client_number')
-        print(client_number)
-        client_data = requests.get(f"http://{fast_api_server_ip}/client/{client_number}").json()
-        print(client_data)
-        return render_template("client_profile.html",username=username,role=userrole,pod=userpod,client_number=client_number,client=client_data)
+        logging.info(f'Received form with client number: {client_number}')
+
+        try:
+            client_data = requests.get(f"http://{fast_api_server_ip}/client/{client_number}").json()
+        except requests.exceptions.RequestException as e:
+            logging.error(f"Failed to get client data: {e}")
+            return render_template("client_profile.html", username=username, role=userrole, pod=userpod,
+                                   client_number=client_number, error="Failed to get client data")
+
+        if client_data:
+            return render_template("client_profile.html", username=username, role=userrole, pod=userpod,
+                                   client_number=client_number, client=client_data)
+        else:
+            return render_template("client_profile.html", username=username, role=userrole, pod=userpod,
+                                   client_number=client_number, error=f"Client {client_number} not found")
+
+
+# @app.route('/client/profile/status', methods=['POST'])
+# def client_status_change():
+#     print("changin status")
+#     status_changed_to = request.form.get('status')
+#     client_number = request.form.get('client_number')
+#     print(status_changed_to)
+#
+#     data = {
+#         "pr_uid": request.cookies.get('uid'),
+#         "state": status_changed_to,
+#         "reason": "none"
+#     }
+#     client_data=requests.post(f"http://{fast_api_server_ip}/client/{client_number}/sts/{status_changed_to}",json=data).json()
+#     print(client_data)
+#     # client_data = requests.get(f"http://{fast_api_server_ip}/client/{client_number}").json()
+#
+#     return render_template("client_profile.html", client_number=client_number, client=client_data)
+
 
 
 
 @app.route('/logout')
 def logout():
     session.pop('uid', None)
-    session.pop('user_name',None)
-    session.pop('user_role',None)
-    session.pop('user_pod',None)
+    session.pop('user_name', None)
+    session.pop('user_role', None)
+    session.pop('user_pod', None)
     resp = redirect(url_for('signin'))
     resp.delete_cookie('uid')
     resp.delete_cookie('user_name')
@@ -160,9 +191,9 @@ def logout():
 
 @app.route('/create_staff', methods=['GET', 'POST'])
 def staffcreate():
-    username=request.cookies.get('user_name')
-    userrole=request.cookies.get('user_role')
-    userpod=request.cookies.get('user_pod')
+    username = request.cookies.get('user_name')
+    userrole = request.cookies.get('user_role')
+    userpod = request.cookies.get('user_pod')
     if request.method == 'POST':
         name = request.form['name']
         phone = request.form['phone']
@@ -230,27 +261,27 @@ def staffcreate():
         try:
             response = requests.post(url=fastapi_url, json=staff)
             print(response)
-            return render_template('createstaff.html', message=response,username=username,role=userrole,pod=userpod)
+            return render_template('createstaff.html', message=response, username=username, role=userrole, pod=userpod)
         except:
             message = "Server Down"
-            return render_template('createstaff.html', message=message,username=username,role=userrole,pod=userpod)
+            return render_template('createstaff.html', message=message, username=username, role=userrole, pod=userpod)
     else:
-        return render_template('createstaff.html',username=username,role=userrole,pod=userpod)
+        return render_template('createstaff.html', username=username, role=userrole, pod=userpod)
 
 
-@app.route('/client_search', methods=['GET', 'POST'])
-def client_search():
-    if request.method == 'POST':
-        clientid = request.form['clientnumber']
-        fastapi_url = f"http://{fast_api_server_ip}:8000/client/{clientid}"
-        try:
-            response = requests.get(url=fastapi_url)
-            return render_template('staffdashboard.html', message=response.json())
-        except:
-            message = "Server Down"
-            return render_template('staffdashboard.html', message=message)
-    else:
-        return render_template('staffdashboard.html')
+# @app.route('/client_search', methods=['GET', 'POST'])
+# def client_search():
+#     if request.method == 'POST':
+#         client_number = request.form['clientnumber']
+#         fastapi_url = f"http://{fast_api_server_ip}:8000/client/{client_number}"
+#         try:
+#             response = requests.get(url=fastapi_url)
+#             return render_template('staffdashboard.html', message=response.json())
+#         except:
+#             message = "Server Down"
+#             return render_template('staffdashboard.html', message=message)
+#     else:
+#         return render_template('staffdashboard.html')
 
 
 @app.route('/statuschange', methods=['GET', 'POST'])
@@ -280,9 +311,9 @@ def statuschange():
 
 @app.route('/create_client', methods=['GET', 'POST'])
 def clientcreate():
-    username=request.cookies.get('user_name')
-    userrole=request.cookies.get('user_role')
-    userpod=request.cookies.get('user_pod')
+    username = request.cookies.get('user_name')
+    userrole = request.cookies.get('user_role')
+    userpod = request.cookies.get('user_pod')
     if request.method == 'POST':
         name = request.form['name']
         phone = request.form['phone']
@@ -329,16 +360,18 @@ def clientcreate():
             print(response)
             pod_name_list = functions.get_all_pod_names()
 
-            return render_template('clientcreate.html', message=response.json(), pod_names=pod_name_list,username=username,role=userrole,pod=userpod)
+            return render_template('clientcreate.html', message=response.json(), pod_names=pod_name_list,
+                                   username=username, role=userrole, pod=userpod)
         except:
             message = "Server Down"
-            return render_template('clientcreate.html', message=message,username=username,role=userrole,pod=userpod)
+            return render_template('clientcreate.html', message=message, username=username, role=userrole, pod=userpod)
     else:
         pod_name_list = functions.get_all_pod_names()
 
         print(pod_name_list)
-        return render_template('clientcreate.html', pod_names=pod_name_list,username=username,role=userrole,pod=userpod)
+        return render_template('clientcreate.html', pod_names=pod_name_list, username=username, role=userrole,
+                               pod=userpod)
 
 
 if __name__ == '__main__':
-    app.run(debug=True, host='192.168.1.91', port=8182)
+    app.run(debug=True, host='192.168.1.16', port=8182)
