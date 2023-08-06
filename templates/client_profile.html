@@ -96,31 +96,49 @@
             background: #f1f1f1;
         }
     </style>
+    {% if client %}
+        <script>
+        function updateFormAction(selectElement) {
+    const selectedValue = selectElement.value;
+    const clientPhone = '{{ client.phone }}';
+    const form = selectElement.closest('form');
+    form.action = `/client/profile/${clientPhone}/${selectedValue}`;
+    form.submit(); // Submitting the form right after updating its action.
+}
+
+    </script>
+    {% endif %}
 </head>
 <body>
 <div class="navbar">
-  <a href="/">Home</a>
-  <a href="/create_staff">Staff</a>
-  <a href="/create_client">New Client</a>
-  <a href="/client/profile">Client Profile</a>
-  <a href="/pod">Pod</a>
-  <a href="/logout" style="float:right">Logout</a>
-  <p style="float:right;margin:15px;color:#f2f2f2;">Welcome, {{ username }}</p>
-</div>
+        <a href="/">Home Page</a>
+     <a href="/create_staff">Create Staff</a>
+     <a href="/create_client">Create Client</a>
+     <a href="/client/profile">Client Profile</a>
+     <a href="/pod">Pod</a>
+     <a href="/logout" style="float:right">Logout</a>
+     <p style="float:right;margin:15px;color:#f2f2f2;">Welcome {{ username }}, Role = {{role}}, pod = {{pod}}</p>
+   </div>
 {% if client %}
 <div class="status-row">
-    <form action="/client/profile/status" method="post">
+    <form action="/client/profile/{{client.phone}}/hot" method="post" id="clientStatusForm">
         <input type="hidden" name="client_number" value="{{ client_number }}">
-        <select id="status" name="status" onchange="this.form.submit()">
-            <option value="new" {% if client.status == 'new' %}selected{% endif %}>New</option>
-            <option value="interested" {% if client.status == 'interested' %}selected{% endif %}>Interested</option>
-            <option value="hot" {% if client.status == 'hot' %}selected{% endif %}>Hot</option>
-            <option value="rejected" {% if client.status == 'rejected' %}selected{% endif %}>Rejected</option>
-            <option value="installed" {% if client.status == 'installed' %}selected{% endif %}>Installed</option>
+        <select id="status" name="status" onchange="updateFormAction(this)">
+            <option value="new">New</option>
+            <option value="interested" >Interested</option>
+            <option value="hot" >Hot</option>
+            <option value="rejected" >Rejected</option>
+            <option value="installed" >Installed</option>
+            <option value="advanced" >Advanced</option>
         </select>
+
     </form>
 </div>
+{% if message %}
+{{message}}
 {% endif %}
+{% endif %}
+
 <div class="container">
     <div class="search-form">
         <form action="/client/profile" method="post">
@@ -143,36 +161,17 @@
             <p><strong>Rating:</strong> {{ client.rating }}</p>
             <p><strong>Address:</strong> {{ client.address.door_no }}, {{ client.address.street }}, {{ client.address.landmark }}, {{ client.address.city }}, {{ client.address.state }}, {{ client.address.pincode }}</p>
             <p><strong>Enquiry:</strong> Created by: {{ client.enquiry.created_by }}, Enquired for: {{ client.enquiry.enquired_for }}, Lead source: {{ client.enquiry.lead_source }}</p>
-            <p><strong>Notes:</strong> {{ client.notes }}</p>
+<!--            <p><strong>Notes:</strong> {{ client.notes }}</p>-->
         </div>
         {% endif %}
     </div>
 </div>
-<script>
-    document.getElementById('status').addEventListener('change', function() {
-        const client_id = document.querySelector('input[name="client_number"]').value;
-        const status = this.value;
-        const url = `http://192.168.1.6:8000/client/${client_id}/sts/${status}`;
-        fetch(url, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-                // Add additional headers here if necessary, like authentication tokens
-            },
-            // If there's any data to be sent in the request body, specify it here
-        }).then(response => {
-            // Handle the response here. E.g. display a message if the request was successful
-            if(response.ok){
-                alert('Status updated successfully.');
-            } else {
-                alert('Error in updating status.')
-            }
-        }).catch(err => {
-            // Handle any errors here
-            console.error('Error: ', err);
-        });
-    });
-</script>
+
+<form action="/client/notes" method="post">
+        <textarea name="notes" placeholder="Add notes..."></textarea>
+        <input type="hidden" name="client_number" value="{{ client.phone }}">
+        <input type="submit" value="Add Note">
+    </form>
 
 </body>
 </html>

@@ -1,3 +1,6 @@
+import ast
+import json
+
 import requests
 from flask import Flask, render_template, redirect, request, session, url_for, make_response, flash
 import functions
@@ -98,7 +101,6 @@ def home():
             new_client_data = requests.get(f"http://{fast_api_server_ip}/client/pod/{pod}").json()
             client_state = requests.get(f"http://{fast_api_server_ip}/client/state/").json()
 
-            resp = None
             if request.method == "POST":
                 print("===========")
                 state = request.form.get("state")
@@ -154,6 +156,41 @@ def client_profile():
                                    client_number=client_number, error=f"Client {client_number} not found")
 
 
+@app.route('/client/profile/<client_number>/<sts>', methods=['GET', 'POST'])
+def change_client_status(client_number, sts):
+    print(client_number, sts)
+    data = {
+        "pr_uid": request.cookies.get('uid'),
+        "state": "sts",
+        "reason": "Unknown"
+    }
+    code = requests.post(f"http://{fast_api_server_ip}/client/{client_number}/sts/{sts}", json=data)
+    print(code)
+
+    client_data = functions.get_client_data_using_phonenumber(client_number)
+    print(client_data)
+
+    return render_template("client_profile.html", client=client_data, message="Status changed!")
+
+
+@app.route('/client/notes', methods=['POST'])
+def add_note():
+    note = request.form.get('notes')
+    client_number = request.form.get('client_number')
+
+    data = {
+        "pr_user_id": request.cookies.get('uid'),
+        "notes": note
+    }
+    x = requests.post(f"http://{fast_api_server_ip}/client/{client_number}/add_notes",json=data)
+    print(x)
+    print(x.json())
+    client_data = functions.get_client_data_using_phonenumber(client_number)
+    print(client_data)
+    print(note)
+    return render_template("client_profile.html",client=client_data)
+
+
 # @app.route('/client/profile/status', methods=['POST'])
 # def client_status_change():
 #     print("changin status")
@@ -171,8 +208,6 @@ def client_profile():
 #     # client_data = requests.get(f"http://{fast_api_server_ip}/client/{client_number}").json()
 #
 #     return render_template("client_profile.html", client_number=client_number, client=client_data)
-
-
 
 
 @app.route('/logout')
@@ -284,29 +319,29 @@ def staffcreate():
 #         return render_template('staffdashboard.html')
 
 
-@app.route('/statuschange', methods=['GET', 'POST'])
-def statuschange():
-    if request.method == 'POST':
-        pr_uid = request.cookies.get('uid')
-        clientid = request.form['clientid']
-        state = request.form['state']
-        reason = request.form['reason']
-        status = {
-            "pr_uid": pr_uid,
-            "state": state,
-            "reason": reason
-        }
-
-        fastapi_url = f"http://{fast_api_server_ip}:8000/client/{clientid}/sts/{state}"
-        try:
-            response = requests.post(url=fastapi_url, json=status)
-            return render_template('statuschange.html', message=response.json())
-        except Exception as e:
-            print(e)
-            message = e
-            return render_template('statuschange.html', message=message)
-    else:
-        return render_template('statuschange.html')
+# @app.route('/statuschange', methods=['GET', 'POST'])
+# def statuschange():
+#     if request.method == 'POST':
+#         pr_uid = request.cookies.get('uid')
+#         clientid = request.form['clientid']
+#         state = request.form['state']
+#         reason = request.form['reason']
+#         status = {
+#             "pr_uid": pr_uid,
+#             "state": state,
+#             "reason": reason
+#         }
+#
+#         fastapi_url = f"http://{fast_api_server_ip}:8000/client/{clientid}/sts/{state}"
+#         try:
+#             response = requests.post(url=fastapi_url, json=status)
+#             return render_template('statuschange.html', message=response.json())
+#         except Exception as e:
+#             print(e)
+#             message = e
+#             return render_template('statuschange.html', message=message)
+#     else:
+#         return render_template('statuschange.html')
 
 
 @app.route('/create_client', methods=['GET', 'POST'])
