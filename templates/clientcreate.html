@@ -76,6 +76,7 @@
     <meta name='viewport' content='width=device-width, initial-scale=1'>
 </head>
 <body>
+
     <div class="navbar">
         <a href="/">Home Page</a>
         <a href="/create_staff">Create Staff</a>
@@ -86,12 +87,26 @@
         <p style="float:right;margin:15px;color:#f2f2f2;">Welcome, {{ username }}, Role = {{role}}, pod = {{pod}}</p>
       </div>
       <br><br>
+
+    <!-- Add this section where you want the bulk upload button to appear -->
+<div class="navbar">
+    <!-- ... your other navbar items ... -->
+    <a href="/bulk_upload" style="float:right">Bulk Upload</a> <!-- New Bulk Upload Button -->
+</div>
+
+<!-- New form for uploading CSV files -->
+<form action="/upload_csv" method="post" enctype="multipart/form-data">
+    <label for="csvfile">Upload CSV:</label>
+    <input type="file" id="csvfile" name="csvfile" accept=".csv" required>
+    <input type="submit" value="Upload">
+</form>
+
     <form action="/create_client" method="post">
         <label for="name">Name:</label>
         <input type="text" id="name" name="name" required><br><br>
         
         <label for="phone">Phone:</label>
-        <input type="tel" id="phone" name="phone" required><br><br>
+        <input type="tel" id="phone" name="phone" required maxlength="10" minlength="10"><br><br>
         
         <h3>Address</h3>
         <label for="door_no">Door No:</label>
@@ -131,9 +146,7 @@
         <label for="enquired_for">Enquired For:</label>
         <input type="text" id="enquired_for" name="enquiry_enquired_for"><br><br>
         
-        <label for="notes">Notes:</label>
-        <textarea id="notes" name="notes"></textarea><br><br>
-        
+
         <input type="submit" value="Submit">
     </form>
 </body>

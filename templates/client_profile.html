@@ -2,100 +2,151 @@
 <html>
 <head>
     <title>Onwords IoT Company - Client Profile</title>
-     <style>
-        .navbar {
-            overflow: hidden;
-            background-color: #333;
-            font-family: Arial, sans-serif;
-        }
+     <style>.navbar {
+    overflow: hidden;
+    background-color: #333;
+    font-family: Arial, sans-serif;
+}
 
-        .navbar a {
-            float: left;
-            display: block;
-            color: #f2f2f2;
-            text-align: center;
-            padding: 14px 16px;
-            text-decoration: none;
-            font-size: 17px;
-        }
+.notes-form {
+    margin-top: 20px;
+}
 
-        .navbar a:hover {
-            background-color: #ddd;
-            color: black;
-        }
 
-        .profile-details {
-            font-family: Arial, sans-serif;
-            margin: 15px;
-            background-color: #f2f2f2;
-            padding: 20px;
-            border-radius: 8px;
-        }
+.navbar a {
+    float: left;
+    display: block;
+    color: #f2f2f2;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+    font-size: 17px;
+}
 
-        .profile-details h2 {
-            color: #009879;
-        }
+.navbar a:hover {
+    background-color: #ddd;
+    color: black;
+}
 
-        .profile-details p {
-            padding: 5px 0;
-        }
+.profile-details {
+    font-family: Arial, sans-serif;
+    margin: 15px;
+    background-color: #f2f2f2;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+}
 
-        .container {
-            display: flex;
-            justify-content: space-between;
-            padding: 20px 0;
-        }
+.profile-details:hover {
+    box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+}
 
-        .search-form {
-            flex-basis: 30%;
-            padding: 20px;
-        }
+.profile-details h2 {
+    color: #009879;
+    font-size: 24px;
+    margin-bottom: 10px;
+}
 
-        .client-details {
-            flex-basis: 70%;
-            padding: 20px;
-        }
+.profile-details p {
+    padding: 5px 0;
+}
 
-        input[type="text"] {
-            width: 100%;
-            padding: 12px 20px;
-            margin: 8px 0;
-            box-sizing: border-box;
-            border: none;
-            background-color: #f2f2f2;
-            font-size: 16px;
-        }
+.container {
+    display: flex;
+    justify-content: space-between;
+    padding: 20px 0;
+    margin-top: 30px;
+}
 
-        input[type="submit"] {
-            background-color: #009879;
-            color: white;
-            padding: 12px 24px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 16px;
-        }
+.search-form {
+    flex-basis: 30%;
+    padding: 20px;
+}
 
-        input[type="submit"]:hover {
-            background-color: #007B57;
-        }
+.client-details {
+    flex-basis: 70%;
+    padding: 20px;
+}
 
-        /* Additional CSS for the dropdown */
-        .status-row {
-            display: flex;
-            justify-content: flex-end;
-            padding-right: 20px;
-        }
+input[type="text"], textarea {
+    width: 100%;
+    padding: 12px 20px;
+    margin: 8px 0;
+    box-sizing: border-box;
+    border: none;
+    background-color: #f2f2f2;
+    font-size: 16px;
+    border-radius: 5px;
+}
 
-        select {
-            width: 200px;
-            padding: 5px;
-            font-size: 16px;
-            border: none;
-            border-radius: 5px;
-            background: #f1f1f1;
-        }
-    </style>
+textarea {
+    resize: vertical;
+}
+
+input[type="submit"] {
+    background-color: #009879;
+    color: white;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+input[type="submit"]:hover {
+    background-color: #007B57;
+}
+
+.status-row {
+    display: flex;
+    justify-content: flex-end;
+    padding-right: 20px;
+}
+
+select {
+    width: 200px;
+    padding: 5px;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    background: #f1f1f1;
+}
+
+.notification {
+    background-color: #e0f4e9;
+    border-left: 5px solid #009879;
+    margin: 20px 0;
+    padding: 10px 15px;
+    border-radius: 5px;
+}
+.note {
+    padding: 15px;
+    margin: 15px 0;
+    background-color: #f9f9f9;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+    transition: all 0.3s ease;
+}
+
+.note:hover {
+    box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+}
+
+.note p {
+    margin: 10px 0;
+}
+
+.note p strong {
+    color: #009879;
+}
+
+#notesContainer {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+</style>
     {% if client %}
         <script>
         function updateFormAction(selectElement) {
@@ -104,6 +155,26 @@
     const form = selectElement.closest('form');
     form.action = `/client/profile/${clientPhone}/${selectedValue}`;
     form.submit(); // Submitting the form right after updating its action.
+}
+
+function displayNotes() {
+    const notesContainer = document.getElementById('notesContainer');
+    let htmlContent = '';
+
+    for (let key in client.notes) {
+        const note = client.notes[key];
+        htmlContent += `
+        <div class="note">
+            <p><strong>User ID:</strong> ${note.pr_user_id}</p>
+            <p><strong>Note:</strong> ${note.notes}</p>
+        </div>`;
+    }
+
+    notesContainer.innerHTML = htmlContent;
+}
+function formatDate(timestamp) {
+    const dateObject = new Date(timestamp * 1000);  // Convert UNIX timestamp to milliseconds
+    return `${dateObject.toDateString()} ${dateObject.toLocaleTimeString()}`;
 }
 
     </script>
@@ -139,6 +210,7 @@
 {% endif %}
 {% endif %}
 
+
 <div class="container">
     <div class="search-form">
         <form action="/client/profile" method="post">
@@ -148,6 +220,35 @@
         {% if error %}
         <p style="color: red;">{{error}}</p>
         {% endif %}
+    {% if client %}
+<!-- Notes form added here, right under the search box -->
+<form action="/client/notes" method="post" class="notes-form">
+    <textarea name="notes" placeholder="Add notes..." rows="5" cols="50"></textarea>
+    <input type="hidden" name="client_number" value="{{ client.phone }}">
+    <input type="hidden" name="pod" value="{{ pod }}">
+    <input type="hidden" name="role" value="{{ role }}">
+    <input type="hidden" name="username" value="{{ username }}">
+
+    <input type="submit" value="Add Note">
+</form>
+
+<!-- Schedule form added here, right under the notes form -->
+<form action="/client/schedule" method="post" class="notes-form">
+    <label for="schedule_type">Schedule:</label>
+    <select name="schedule_type" id="schedule_type">
+        <option value="call">Call</option>
+        <option value="visit">Visit</option>
+        <option value="installation">Installation</option>
+    </select>
+    <input type="datetime-local" name="schedule_time" id="schedule_time" required>
+    <input type="hidden" name="client_number" value="{{ client.phone }}">
+    <input type="hidden" name="pod" value="{{ pod }}">
+     <input type="hidden" name="role" value="{{ role }}">
+     <input type="hidden" name="username" value="{{ username }}">
+    <input type="submit" value="Schedule">
+</form>
+
+
     </div>
 
 
@@ -161,17 +262,24 @@
             <p><strong>Rating:</strong> {{ client.rating }}</p>
             <p><strong>Address:</strong> {{ client.address.door_no }}, {{ client.address.street }}, {{ client.address.landmark }}, {{ client.address.city }}, {{ client.address.state }}, {{ client.address.pincode }}</p>
             <p><strong>Enquiry:</strong> Created by: {{ client.enquiry.created_by }}, Enquired for: {{ client.enquiry.enquired_for }}, Lead source: {{ client.enquiry.lead_source }}</p>
-<!--            <p><strong>Notes:</strong> {{ client.notes }}</p>-->
+
         </div>
+
+        <div id="notesContainer">
+
+    {% for note in notes %}
+
+    <div class="note">
+        <p><strong>Timestamp:</strong> {{ note.timestamp }}</p>
+        <p><strong>User ID:</strong> {{ note.pr_user_id }}</p>
+        <p><strong>Note:</strong> {{ note.notes }}</p>
+    </div>
+    <hr>
+    {% endfor %}
+</div>
         {% endif %}
     </div>
 </div>
-
-<form action="/client/notes" method="post">
-        <textarea name="notes" placeholder="Add notes..."></textarea>
-        <input type="hidden" name="client_number" value="{{ client.phone }}">
-        <input type="submit" value="Add Note">
-    </form>
-
+{% endif %}
 </body>
 </html>
