@@ -5,8 +5,10 @@ from flask_session import Session
 import logging
 from datetime import datetime
 
+
 def convert_timestamp(timestamp):
     return datetime.utcfromtimestamp(timestamp).strftime('%Y-%m-%d %H:%M:%S')
+
 
 app = Flask(__name__)
 app.config["SESSION_PERMANENT"] = True
@@ -15,6 +17,7 @@ Session(app)
 
 fast_api_server_ip = "192.168.1.16:8000"
 logging.basicConfig(level=logging.INFO)
+
 
 @app.route('/signin', methods=['GET', 'POST'])
 def signin():
@@ -49,6 +52,60 @@ def signin():
             return render_template('signin.html', message=message)
     else:
         return render_template('signin.html')
+
+
+# from datetime import datetime
+
+@app.route('/my_schedule')
+def my_schedule():
+    uid = request.cookies.get('uid')
+    username = request.cookies.get('user_name')
+    userrole = request.cookies.get('user_role')
+    userpod = request.cookies.get('user_pod')
+
+    schedule_data = requests.get(f"http://{fast_api_server_ip}/schedule/{uid}").json()
+
+    now = datetime.now()
+
+    for schedules in schedule_data:
+        date_and_time = schedules['date_and_time']
+        date_str, time_str = functions.convert_datetime(date_and_time)
+        schedules['date'] = date_str
+        schedules['time'] = time_str
+        del schedules['date_and_time']
+
+        event_date_time_str = date_str + " " + time_str
+        event_date_time = datetime.strptime(event_date_time_str, "%d-%m-%Y %I:%M%p")
+
+        remaining_time = event_date_time - now
+        days = remaining_time.days
+        if remaining_time.total_seconds() > 0:
+            # Format to days, hours, minutes
+            hours, remainder = divmod(remaining_time.seconds, 3600)
+            minutes, _ = divmod(remainder, 60)
+            schedules['remaining_time'] = f"{hours}:{str(minutes).zfill(2)}" if days == 0 else f"{days} days, {hours}:{str(minutes).zfill(2)}"
+        else:
+            schedules['remaining_time'] = "Already occurred."
+
+        # Check if the event is today
+        schedules['is_today'] = True if days == 0 and remaining_time.total_seconds() > 0 else False
+
+        pr_user_id = schedules['pr_user_id']
+        pr_name = functions.convert_pr_uid_to_name(pr_user_id)
+        time_stamp = schedules['schedule_created_timestamp']
+        dt_obj = datetime.fromtimestamp(time_stamp)
+        date_str = dt_obj.strftime('%d-%m-%Y')
+        time_str = dt_obj.strftime('%I:%M%p').lower()
+        schedules['created_time'] = date_str + " " + time_str
+        del schedules['schedule_created_timestamp']
+        schedules['name'] = pr_name
+        del schedules['pr_user_id']
+
+    return render_template("my_schedule.html", schedule_data=schedule_data, username=username, role=userrole,
+                           pod=userpod, now_date=datetime.now().strftime('%d-%m-%Y'))
+
+
+
 
 @app.route('/pod', methods=['GET', 'POST'])
 def pod():
@@ -88,6 +145,7 @@ def pod():
         print(f"staff = {staff_zip}")
         return render_template('pod.html', staff_zip=staff_zip, username=username, role=userrole, pod=userpod)
 
+
 @app.route('/', methods=['GET', 'POST'])
 def home():
     try:
@@ -121,6 +179,7 @@ def home():
             return redirect('/signin')
     except Exception as e:
         print("error", e)
+
 
 @app.route('/client/profile', methods=['GET', 'POST'])
 def client_profile():
@@ -158,6 +217,7 @@ def client_profile():
             return render_template("client_profile.html", username=username, role=userrole, pod=userpod,
                                    client_number=client_number, error=f"Client {client_number} not found",
                                    convert_timestamp=convert_timestamp, notes=notes_list)
+
 
 @app.route('/client/profile/<client_number>/<sts>', methods=['GET', 'POST'])
 def change_client_status(client_number, sts):
@@ -206,7 +266,9 @@ def add_note():
             for note in client_data[keys]:
                 notes_list.append(client_data[keys][note])
     print(notes_list)
-    return render_template("client_profile.html", client=client_data, notes=notes_list,role=role,username=username,pod=pod)
+    return render_template("client_profile.html", client=client_data, notes=notes_list, role=role, username=username,
+                           pod=pod)
+
 
 @app.route('/client/schedule', methods=['POST'])
 def add_schedule():
@@ -216,7 +278,7 @@ def add_schedule():
     schedule_time = request.form.get('schedule_time')
     role = request.form.get('role')
     username = request.form.get("username")
-    print("pod = ",pod)
+    print("pod = ", pod)
     data = {
         "pr_user_id": request.cookies.get('uid'),
         "type": schedule_type,
@@ -235,7 +297,9 @@ def add_schedule():
             for note in client_data[keys]:
                 notes_list.append(client_data[keys][note])
     print(notes_list)
-    return render_template("client_profile.html", client=client_data, notes=notes_list,pod=pod,role=role,username=username)
+    return render_template("client_profile.html", client=client_data, notes=notes_list, pod=pod, role=role,
+                           username=username)
+
 
 @app.route('/logout')
 def logout():
@@ -249,6 +313,7 @@ def logout():
     resp.delete_cookie('user_role')
     resp.delete_cookie('user_pod')
     return redirect(url_for("signin"))
+
 
 @app.route('/create_staff', methods=['GET', 'POST'])
 def staffcreate():
@@ -328,6 +393,7 @@ def staffcreate():
             return render_template('createstaff.html', message=message, username=username, role=userrole, pod=userpod)
     else:
         return render_template('createstaff.html', username=username, role=userrole, pod=userpod)
+
 
 # @app.route('/client_search', methods=['GET', 'POST'])
 # def client_search():
@@ -431,6 +497,7 @@ def clientcreate():
         print(pod_name_list)
         return render_template('clientcreate.html', pod_names=pod_name_list, username=username, role=userrole,
                                pod=userpod)
+
 
 if __name__ == '__main__':
     app.run(debug=True, host='192.168.1.16', port=8182)

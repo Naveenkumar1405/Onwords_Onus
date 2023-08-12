@@ -1,8 +1,14 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Onwords IoT Company Dashboard</title>
+    <title>Onwords-My Schedule</title>
     <style>
+    .today-schedule {
+    color: red;
+}
+.already-occurred {
+    color: red;
+}
         .navbar {
             overflow: hidden;
             background-color: #333;
@@ -22,8 +28,7 @@
             background-color: #ddd;
             color: black;
         }
-    </style>
-    <style>
+
         table {
             width: 100%;
             border-collapse: collapse;
@@ -33,94 +38,87 @@
             min-width: 400px;
             box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
         }
+
         thead tr {
             background-color: #009879;
             color: #ffffff;
             text-align: left;
         }
+
         th, td {
             padding: 12px 15px;
         }
+
         tbody tr {
             border-bottom: 1px solid #dddddd;
         }
+
         tbody tr:nth-of-type(even) {
             background-color: #f3f3f3;
         }
+
         tbody tr:last-of-type {
             border-bottom: 2px solid #009879;
         }
     </style>
 </head>
 <body>
-
 <div class="navbar">
   <a href="/">Home Page</a>
   <a href="/create_staff">Create Staff</a>
   <a href="/my_schedule">My Schedule</a>
   <a href="/create_client">Create Client</a>
-  <a href="/client/profile">Client Profile</a> <!-- Here is the new addition -->
+  <a href="/client/profile">Client Profile</a>
   <a href="/pod">Pod</a>
   <a href="logout" style="float:right">Logout</a>
   <p style="float:right;margin:15px;color:#f2f2f2;">Welcome, {{ username }}, Role = {{role}}, pod = {{pod}}</p>
 </div>
-
 <div style="padding:20px;margin-top:30px;height:1500px;">
-
+    <!-- Existing content -->
     <form action="/" id="lead-incharge" name="state" method="post">
-    <label for="lead-in">Select State</label>
-        <select name="state" id="lead-in" onchange="leadIn()">
-        <option value="">select</option>
-        {% for state in client_state %}
-        <option value="{{ state }}">{{ state }}</option>
-        {% endfor %}
-        </select>  
+        <!-- ... -->
     </form>
-    
-  <h1>New Clients</h1>
 
-      <table>
-    <thead>
-        <tr>
-            <th>Name</th>
-            <th>Phone</th>
-            <th>Pod ID</th>
-            <th>Rating</th>
-        </tr>
-    </thead>
-    <tbody>
-{% for client in new_client_data %}
-<tr class="clickable-row">
-    <td>{{ client.name }}</td>
-    <td>{{ client.phone }}</td>
-    <td>{{ client.pod_id }}</td>
-    <td>{{ client.rating }}</td>
-    <form class="hidden-form" action="/client/profile" method="post">
-        <input type="hidden" name="client_number" value="{{ client.phone }}">
-    </form>
-</tr>
-{% endfor %}
 
-    </tbody>
-</table>
 
+    <h1>Schedule</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Client ID</th>
+
+                <th>Date</th>
+                <th>Time</th>
+
+                <th>PR Created</th>
+
+                <th>Schedule Created</th>
+                <th>Type</th>
+                <th>Time Left</th>
+
+            </tr>
+        </thead>
+        <tbody>
+    {% for item in schedule_data %}
+    <tr{% if item['is_today'] %} style="color:green;"{% elif item['remaining_time'] == 'Already occurred.' %} style="color:red;"{% endif %}>
+        <td>{{ item['client_id'] }}</td>
+        <td>{{ item['date'] }}</td>
+        <td>{{ item['time'] }}</td>
+        <td>{{ item['name'] }}</td>
+        <td>{{ item['created_time'] }}</td>
+        <td>{{ item['type'] }}</td>
+        <td>{{ item['remaining_time'] }}</td>
+    </tr>
+    {% endfor %}
+</tbody>
+
+
+
+
+    </table>
 </div>
-
 <script>
-   function leadIn() {
-          document.getElementById("lead-incharge").submit();
-        }
-  </script>
-<script>
-    const rows = document.querySelectorAll('.clickable-row');
-    rows.forEach(row => {
-        row.addEventListener('click', function() {
-            this.querySelector('.hidden-form').submit();
-        });
-    });
+    /* Your existing scripts */
 </script>
-
-
-
 </body>
 </html>
