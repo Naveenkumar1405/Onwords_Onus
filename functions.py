@@ -52,7 +52,10 @@ def convert_to_timestamp(date, time):
 
 
 def convert_datetime(date_and_time):
+    print("converting")
     dt_obj = datetime.strptime(date_and_time, '%Y-%m-%dT%H:%M')
+    print(dt_obj)
     date_str = dt_obj.strftime('%d-%m-%Y')
     time_str = dt_obj.strftime('%I:%M%p')
+    print(date_str, time_str)
     return date_str, time_str

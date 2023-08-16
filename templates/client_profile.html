@@ -270,8 +270,9 @@ function formatDate(timestamp) {
     {% for note in notes %}
 
     <div class="note">
-        <p><strong>Timestamp:</strong> {{ note.timestamp }}</p>
-        <p><strong>User ID:</strong> {{ note.pr_user_id }}</p>
+        <p><strong>Date:</strong> {{ note.date }}</p>
+        <p><strong>Time:</strong> {{ note.time }}</p>
+        <p><strong>User ID:</strong> {{ note.pr_name }}</p>
         <p><strong>Note:</strong> {{ note.notes }}</p>
     </div>
     <hr>

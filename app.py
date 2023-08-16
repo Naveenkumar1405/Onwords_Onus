@@ -1,3 +1,6 @@
+import csv
+import io
+
 import requests
 from flask import Flask, render_template, redirect, request, session, url_for, make_response, flash
 import functions
@@ -85,7 +88,7 @@ def my_schedule():
             minutes, _ = divmod(remainder, 60)
             schedules['remaining_time'] = f"{hours}:{str(minutes).zfill(2)}" if days == 0 else f"{days} days, {hours}:{str(minutes).zfill(2)}"
         else:
-            schedules['remaining_time'] = "Already occurred."
+            schedules['remaining_time'] = "Breached"
 
         # Check if the event is today
         schedules['is_today'] = True if days == 0 and remaining_time.total_seconds() > 0 else False
@@ -205,9 +208,32 @@ def client_profile():
             if keys == "notes":
                 for note in client_data[keys]:
                     notes_list.append(client_data[keys][note])
-        print(notes_list)
+        print(f"before - {notes_list}")
 
-        print(f"client_data = {client_data}")
+        for note in notes_list:
+            pr_uid = note['pr_user_id']
+            pr_name = functions.convert_pr_uid_to_name(pr_uid)
+
+            note["pr_name"] = pr_name
+
+            time_stamp = note['timestamp']
+
+
+            dt_obj = datetime.fromtimestamp(time_stamp)
+            date_str = dt_obj.strftime('%d-%m-%Y')
+            time_str = dt_obj.strftime('%I:%M%p').lower()
+
+            note['date'] = date_str
+            note['time'] = time_str
+
+            del note['pr_user_id']
+            del note['timestamp']
+
+            # print(time_stamp)
+
+        print(f"after altering = {notes_list}")
+
+        # print(f"client_data = {client_data}")
 
         if client_data:
             return render_template("client_profile.html", username=username, role=userrole, pod=userpod,
@@ -217,6 +243,48 @@ def client_profile():
             return render_template("client_profile.html", username=username, role=userrole, pod=userpod,
                                    client_number=client_number, error=f"Client {client_number} not found",
                                    convert_timestamp=convert_timestamp, notes=notes_list)
+
+@app.route('/upload_csv', methods=['POST'])
+def upload_csv():
+    if 'csvfile' not in request.files:
+        return 'No file part'
+
+    file = request.files['csvfile']
+
+    if file.filename == '':
+        return 'No selected file'
+
+    if file and file.filename.endswith('.csv'):
+        content = io.StringIO(file.read().decode('UTF-16')) # Adjust the encoding if needed
+        reader = csv.reader(content, delimiter='\t')
+
+        # Find the index of the "ad_name" column
+        header = next(reader)
+        ad_name_index = header.index('ad_name')
+        platform = header.index('platform')
+        full_name = header.index('full_name')
+        phone_number = header.index('phone_number')
+        email = header.index('email')
+        city = header.index('city')
+
+
+        # Print the "ad_name" values
+        for row in reader:
+            phno = row[phone_number]
+
+            if len(phno) > 10:
+                phno = phno[-10:]
+            data = {
+                "ad_name":row[ad_name_index],
+                "platform":row[platform],
+                "full_name":row[full_name],
+                "phone_number":phno,
+                "email":row[email],
+                "city":row[city],
+            }
+            print(data)
+        return 'Ad names successfully printed'
+
 
 
 @app.route('/client/profile/<client_number>/<sts>', methods=['GET', 'POST'])

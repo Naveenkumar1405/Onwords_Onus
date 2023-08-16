@@ -100,7 +100,7 @@
         </thead>
         <tbody>
     {% for item in schedule_data %}
-    <tr{% if item['is_today'] %} style="color:green;"{% elif item['remaining_time'] == 'Already occurred.' %} style="color:red;"{% endif %}>
+    <tr{% if item['is_today'] %} style="color:green;"{% elif item['remaining_time'] == 'Breached' %} style="color:red;"{% endif %}>
         <td>{{ item['client_id'] }}</td>
         <td>{{ item['date'] }}</td>
         <td>{{ item['time'] }}</td>
