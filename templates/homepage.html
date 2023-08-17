@@ -1,126 +1,177 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-    <title>Onwords IoT Company Dashboard</title>
+    <title>Onwords</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+
     <style>
-        .navbar {
-            overflow: hidden;
-            background-color: #333;
+        body {
+            font-family: 'Roboto', sans-serif;
+            font-weight: 400;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f7fc;
         }
 
-        .navbar a {
-            float: left;
-            display: block;
-            color: #f2f2f2;
-            text-align: center;
-            padding: 14px 16px;
-            text-decoration: none;
-            font-size: 17px;
+        h1, h2, h3, h4, h5, h6, .navbar-brand {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 500;
         }
 
-        .navbar a:hover {
-            background-color: #ddd;
-            color: black;
+        .navbar-custom {
+            background-color: #324759;
         }
-    </style>
-    <style>
+
+        .navbar-custom .navbar-brand, .navbar-custom .navbar-text, .navbar-custom .nav-link {
+            color: #f8f9fa;
+        }
+
+        .navbar-custom .nav-link:hover {
+            background-color: #253542;
+        }
+
+        h1 {
+            margin: 1.875rem 0 1.25rem;
+            color: #324759;
+            font-size: 1.75rem;
+        }
+
         table {
             width: 100%;
             border-collapse: collapse;
-            margin: 15px 0;
-            font-size: 0.9em;
-            font-family: sans-serif;
-            min-width: 400px;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+            margin-top: 1.25rem;
         }
-        thead tr {
-            background-color: #009879;
-            color: #ffffff;
+
+        th, td {
+            border: .0625rem solid #e0e4e8;
+            padding: .625rem;
             text-align: left;
         }
-        th, td {
-            padding: 12px 15px;
+
+        th {
+            background-color: #dae2e9;
         }
-        tbody tr {
-            border-bottom: 1px solid #dddddd;
+
+        tr.clickable-row:hover {
+            background-color: #dae2e9;
+            cursor: pointer;
         }
-        tbody tr:nth-of-type(even) {
-            background-color: #f3f3f3;
+
+        .hidden-form {
+            display: none;
         }
-        tbody tr:last-of-type {
-            border-bottom: 2px solid #009879;
+
+        /* Responsive styles */
+        @media screen and (max-width: 48rem) {
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            table {
+                font-size: .875rem;
+            }
+
+            th, td {
+                padding: .5rem;
+            }
         }
     </style>
 </head>
+
 <body>
-
-<div class="navbar">
-  <a href="/">Home Page</a>
-  <a href="/create_staff">Create Staff</a>
-  <a href="/my_schedule">My Schedule</a>
-  <a href="/create_client">Create Client</a>
-  <a href="/client/profile">Client Profile</a> <!-- Here is the new addition -->
-  <a href="/pod">Pod</a>
-  <a href="logout" style="float:right">Logout</a>
-  <p style="float:right;margin:15px;color:#f2f2f2;">Welcome, {{ username }}, Role = {{role}}, pod = {{pod}}</p>
-</div>
-
-<div style="padding:20px;margin-top:30px;height:1500px;">
-
-    <form action="/" id="lead-incharge" name="state" method="post">
-    <label for="lead-in">Select State</label>
-        <select name="state" id="lead-in" onchange="leadIn()">
-        <option value="">select</option>
-        {% for state in client_state %}
-        <option value="{{ state }}">{{ state }}</option>
-        {% endfor %}
-        </select>  
-    </form>
-    
-  <h1>New Clients</h1>
-
-      <table>
-    <thead>
-        <tr>
-            <th>Name</th>
-            <th>Phone</th>
-            <th>Pod ID</th>
-            <th>Rating</th>
-        </tr>
-    </thead>
-    <tbody>
-{% for client in new_client_data %}
-<tr class="clickable-row">
-    <td>{{ client.name }}</td>
-    <td>{{ client.phone }}</td>
-    <td>{{ client.pod_id }}</td>
-    <td>{{ client.rating }}</td>
-    <form class="hidden-form" action="/client/profile" method="post">
-        <input type="hidden" name="client_number" value="{{ client.phone }}">
-    </form>
-</tr>
-{% endfor %}
-
-    </tbody>
-</table>
-
-</div>
-
-<script>
-   function leadIn() {
-          document.getElementById("lead-incharge").submit();
-        }
-  </script>
-<script>
-    const rows = document.querySelectorAll('.clickable-row');
-    rows.forEach(row => {
-        row.addEventListener('click', function() {
-            this.querySelector('.hidden-form').submit();
+    <nav class="navbar navbar-expand-lg navbar-custom">
+        <a class="navbar-brand" href="/">Onwords</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="/">Home</a>
+                </li>
+                {% if role != 'PR' %}
+                <li class="nav-item">
+                    <a class="nav-link" href="/create_staff">Create Staff</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/create_client">Create Client</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/client/profile">Client Profile</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/my_schedule">My Schedule</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/pod">Pod</a>
+                </li>
+                {% else %}
+                <li class="nav-item">
+                    <a class="nav-link" href="/client/profile">Client Profile</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/my_schedule">My Schedule</a>
+                </li>
+                {% endif %}
+            </ul>
+            <ul class="navbar-nav">
+                <li class="navbar-text">Welcome, {{ username }}, Role = {{role}}, pod = {{pod}}</li>
+                <li class="nav-item">
+                    <a class="nav-link" href="logout">Logout</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+    <div style="padding:1.25rem;margin-top:1.875rem;height:93.75rem;">
+        <form action="/" id="lead-incharge" name="state" method="post">
+            <label for="lead-in">Select State</label>
+            <select name="state" id="lead-in" onchange="leadIn()">
+                <option value="">select</option>
+                {% for state in client_state %}
+                <option value="{{ state }}">{{ state }}</option>
+                {% endfor %}
+            </select>  
+        </form>    
+        <h1>New Clients</h1>
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Phone</th>
+                    <th>Pod ID</th>
+                    <th>Rating</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for client in new_client_data %}
+                <tr class="clickable-row">
+                    <td>{{ client.name }}</td>
+                    <td>{{ client.phone }}</td>
+                    <td>{{ client.pod_id }}</td>
+                    <td>{{ client.rating }}</td>
+                    <form class="hidden-form" action="/client/profile" method="post">
+                        <input type="hidden" name="client_number" value="{{ client.phone }}">
+                    </form>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <script>
+       function leadIn() {
+              document.getElementById("lead-incharge").submit();
+            }
+    </script>
+    <script>
+        const rows = document.querySelectorAll('.clickable-row');
+        rows.forEach(row => {
+            row.addEventListener('click', function() {
+                this.querySelector('.hidden-form').submit();
+            });
         });
-    });
-</script>
-
-
-
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
 </body>
 </html>
