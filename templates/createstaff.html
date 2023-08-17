@@ -3,103 +3,107 @@
 <head>
     <style>
         body {
-            font-family: Arial, Helvetica, sans-serif;
-            background-color: #f5f5f5;
-            margin: 0;
-            padding: 0;
+            font-family: 'Open Sans', sans-serif;
+            background-color: #f4f4f4;
         }
-
+    
         .navbar {
-            overflow: hidden;
             background-color: #333;
-            font-size: 17px;
-            box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 10px 20px;
+            color: white;
         }
-
+    
         .navbar a {
-            float: left;
-            display: block;
-            color: #f2f2f2;
-            text-align: center;
-            padding: 14px 16px;
+            color: white;
+            margin-right: 20px;
+            padding: 8px 15px;
             text-decoration: none;
+            transition: background-color 0.3s;
         }
-
+    
         .navbar a:hover {
-            background-color: #ddd;
-            color: black;
+            background-color: #555;
+            border-radius: 5px;
         }
-
-        .navbar p {
-            float: right;
-            margin: 15px;
-            color: #f2f2f2;
+    
+        h1, h2 {
+            color: #333;
         }
-
+    
         form {
-            max-width: 600px;
-            margin: 50px auto;
-            background-color: #fff;
+            background-color: white;
             padding: 20px;
             border-radius: 5px;
-            box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin: 20px;
         }
-
-        h1, h2 {
-            color: #009879;
-            text-align: center;
-        }
-
+    
         label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: bold;
+            font-weight: 600;
+            margin-right: 10px;
         }
-
-        input[type="text"], input[type="email"], input[type="date"], select, input[type="password"] {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 15px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-        }
-
+    
         input[type="submit"] {
-            width: 100%;
-            background-color: #009879;
+            background-color: #007BFF;
             color: white;
-            padding: 10px;
             border: none;
+            padding: 10px 15px;
             border-radius: 5px;
             cursor: pointer;
-            font-size: 17px;
+            transition: background-color 0.3s;
         }
-
+    
         input[type="submit"]:hover {
-            background-color: #007B63;
+            background-color: #0056b3;
+        }
+    
+        input, select {
+            margin-bottom: 10px;
+            width: 100%;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
         }
     </style>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <meta charset='utf-8'>
     <meta http-equiv='X-UA-Compatible' content='IE=edge'>
-    <title>Page Title</title>
+    <title>Create Staff</title>
     <meta name='viewport' content='width=device-width, initial-scale=1'>
-    <link rel='stylesheet' type='text/css' media='screen' href='main.css'>
+    
     <script src='main.js'></script>
 </head>
 <body>
-    <div class="navbar">
-        <a href="/">Home Page</a>
-     <a href="/create_staff">Create Staff</a>
-     <a href="/create_client">Create Client</a>
-     <a href="/client/profile">Client Profile</a>
-     <a href="/pod">Pod</a>
-     <a href="/logout" style="float:right">Logout</a>
-     <p style="float:right;margin:15px;color:#f2f2f2;">Welcome {{ username }}, Role = {{role}}, pod = {{pod}}</p>
-   </div>
-   <br>
-   <br>
-    <h1>Create staff</h1>
-    <form action="/create_staff" method="post">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <a class="navbar-brand" href="/">Home</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav mr-auto">
+                {% if role != 'PR' %}
+                <li class="nav-item"><a href="/create_staff">Create Staff</a></li>
+                    <li class="nav-item"><a href="/create_client">Create Client</a></li>
+                        <li class="nav-item"> <a href="/client/profile">Client Profile</a></li>
+                            <li class="nav-item"><a href="/my_schedule">My Schedule</a></li>
+                                <li class="nav-item"><a href="/pod">Pod</a></li>
+            {% else %}
+            <li class="nav-item"><a href="/client/profile">Client Profile</a></li>
+                <li class="nav-item"><a href="/my_schedule">My Schedule</a></li>
+            {% endif %}    
+            </ul>
+            <span class="navbar-text">
+                Welcome, {{ username }}, Role = {{ role }}, pod = {{ pod }}
+            </span>
+            <a class="nav-link ml-3" href="logout">Logout</a>
+        </div>
+    </nav>
+    
+    <div class="container mt-5">
+        <h1 class="mb-4">Create staff</h1>
+        <form action="/create_staff" method="post" class="p-5 bg-white rounded shadow-sm">
         <label for="name">Name:</label>
         <input type="text" id="name" name="name" required><br><br>
 
@@ -111,9 +115,6 @@
 
         <label for="department">Department:</label>
         <input type="text" id="department" name="department" required><br><br>
-
-<!--        <label for="pod_id">Pod ID:</label>-->
-<!--        <input type="text" id="pod_id" name="pod_id" required><br><br>-->
 
         <label for="dob">Date of Birth:</label>
         <input type="date" id="dob" name="dob" required><br><br>
@@ -178,11 +179,9 @@
         <label for="pan_no">PAN Number:</label>
         <input type="text" id="pan_no" name="government_id_pan_no" required><br><br>
 
-<!--        <label for="role">Role:</label>-->
-<!--        <input type="text" id="role" name="role" required><br><br>-->
-
-
-        Select role: <select id="role" name="role">
+        <div class="form-group"> 
+            <label for="role">Select role:</label>
+            <select class="form-control" id="role" name="role">
 
             <option value="Super Admin"> Super Admin</option>
             <option value="Admin">Admin</option>
@@ -193,7 +192,8 @@
         <label for="role">Password:</label>
         <input type="Password" id="Password" name="Password" required><br><br>
 
-        <input type="submit" name="staffcreate" value="Create staff">
+        <input type="submit" class="btn btn-primary mt-3" name="staffcreate" value="Create staff">
     </form>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
 </body>
 </html>

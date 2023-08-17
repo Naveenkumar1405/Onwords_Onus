@@ -1,124 +1,98 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Onwords-My Schedule</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css">
     <style>
-    .today-schedule {
-    color: red;
-}
-.already-occurred {
-    color: red;
-}
-        .navbar {
-            overflow: hidden;
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        .navbar-custom {
             background-color: #333;
         }
-
-        .navbar a {
-            float: left;
-            display: block;
+        .navbar-custom a {
             color: #f2f2f2;
-            text-align: center;
-            padding: 14px 16px;
-            text-decoration: none;
-            font-size: 17px;
         }
-
-        .navbar a:hover {
+        .navbar-custom a:hover, .navbar-custom .navbar-brand:hover {
+            color: #000;
             background-color: #ddd;
-            color: black;
         }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 15px 0;
-            font-size: 0.9em;
-            font-family: sans-serif;
-            min-width: 400px;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+        .welcome-text {
+            margin-right: 20px;
+            color: #f2f2f2;
         }
-
-        thead tr {
+        .table-custom {
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0px 0px 5px rgba(0,0,0,0.3);
+        }
+        .table-custom thead {
             background-color: #009879;
-            color: #ffffff;
-            text-align: left;
-        }
-
-        th, td {
-            padding: 12px 15px;
-        }
-
-        tbody tr {
-            border-bottom: 1px solid #dddddd;
-        }
-
-        tbody tr:nth-of-type(even) {
-            background-color: #f3f3f3;
-        }
-
-        tbody tr:last-of-type {
-            border-bottom: 2px solid #009879;
         }
     </style>
 </head>
 <body>
-<div class="navbar">
-  <a href="/">Home Page</a>
-  <a href="/create_staff">Create Staff</a>
-  <a href="/my_schedule">My Schedule</a>
-  <a href="/create_client">Create Client</a>
-  <a href="/client/profile">Client Profile</a>
-  <a href="/pod">Pod</a>
-  <a href="logout" style="float:right">Logout</a>
-  <p style="float:right;margin:15px;color:#f2f2f2;">Welcome, {{ username }}, Role = {{role}}, pod = {{pod}}</p>
-</div>
-<div style="padding:20px;margin-top:30px;height:1500px;">
-    <!-- Existing content -->
-    <form action="/" id="lead-incharge" name="state" method="post">
-        <!-- ... -->
-    </form>
 
+<nav class="navbar navbar-expand-lg navbar-dark navbar-custom">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="/">Onwords</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                {% if role != 'PR' %}
+                    <li class="nav-item"><a class="nav-link" href="/create_staff">Create Staff</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/create_client">Create Client</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/client/profile">Client Profile</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/my_schedule">My Schedule</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/pod">Pod</a></li>
+                {% else %}
+                    <li class="nav-item"><a class="nav-link" href="/client/profile">Client Profile</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/my_schedule">My Schedule</a></li>
+                {% endif %}
+            </ul>
+            <span class="navbar-text welcome-text">Welcome, {{ username }} | Role: {{ role }} | Pod: {{ pod }}</span>
+            <a class="btn btn-outline-light" href="/logout">Logout</a>
+        </div>
+    </div>
+</nav>
 
-
-    <h1>Schedule</h1>
-    <table>
+<div class="container mt-4">
+    <h1 class="mb-4">My Schedule</h1>
+    <table class="table table-hover table-custom">
         <thead>
             <tr>
                 <th>Client ID</th>
-
                 <th>Date</th>
                 <th>Time</th>
-
                 <th>PR Created</th>
-
                 <th>Schedule Created</th>
                 <th>Type</th>
                 <th>Time Left</th>
-
             </tr>
         </thead>
         <tbody>
-    {% for item in schedule_data %}
-    <tr{% if item['is_today'] %} style="color:green;"{% elif item['remaining_time'] == 'Breached' %} style="color:red;"{% endif %}>
-        <td>{{ item['client_id'] }}</td>
-        <td>{{ item['date'] }}</td>
-        <td>{{ item['time'] }}</td>
-        <td>{{ item['name'] }}</td>
-        <td>{{ item['created_time'] }}</td>
-        <td>{{ item['type'] }}</td>
-        <td>{{ item['remaining_time'] }}</td>
-    </tr>
-    {% endfor %}
-</tbody>
-
-
-
-
+            {% for item in schedule_data %}
+                <tr{% if item['is_today'] %} class="table-success"{% elif item['remaining_time'] == 'Breached' %} class="table-danger"{% endif %}>
+                    <td>{{ item['client_id'] }}</td>
+                    <td>{{ item['date'] }}</td>
+                    <td>{{ item['time'] }}</td>
+                    <td>{{ item['name'] }}</td>
+                    <td>{{ item['created_time'] }}</td>
+                    <td>{{ item['type'] }}</td>
+                    <td>{{ item['remaining_time'] }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
     </table>
 </div>
-<script>
-    /* Your existing scripts */
-</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
 </body>
 </html>
