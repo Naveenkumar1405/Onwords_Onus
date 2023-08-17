@@ -154,10 +154,14 @@ def home():
     try:
         uid = request.cookies.get('uid')
         if uid:
-            print(request.method)
             user_name = requests.post(f"http://{fast_api_server_ip}/staff/data", json={'uid': uid}).json()
             pod = requests.get(f"http://{fast_api_server_ip}/staff/pod/{uid}").json()
-            new_client_data = requests.get(f"http://{fast_api_server_ip}/client/pod/{pod}").json()
+            try:
+
+                new_client_data = requests.get(f"http://{fast_api_server_ip}/client/pod/{pod}").json()
+            except:
+                new_client_data =""
+
             client_state = requests.get(f"http://{fast_api_server_ip}/client/state/").json()
 
             if request.method == "POST":
@@ -169,6 +173,7 @@ def home():
                     render_template('homepage.html', username=user_name['name'], role=user_name['role'], pod=pod,
                                     new_client_data=new_client_data, client_state=client_state, client=new_client_data))
             else:
+                print("inside get")
                 resp = make_response(
                     render_template('homepage.html', username=user_name['name'], role=user_name['role'], pod=pod,
                                     new_client_data=new_client_data, client_state=client_state, client=new_client_data))
