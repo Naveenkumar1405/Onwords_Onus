@@ -5,85 +5,42 @@
     <title>Create a Pod</title>
     
     <!-- Bootstrap CSS -->
-    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+   <!-- bootstarp links -->
+   <link rel="stylesheet" href="../static/css/bootstrap.min.css">
+   <link rel="stylesheet" href="../static/css/main.css">
+   <!-- bootstarp links -->
     <!-- Select2 CSS -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
 
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
-
-    <style>
-        body {
-            background-color: #f7f7f7;
-            font-family: Arial, sans-serif;
-        }
-
-        .navbar {
-            background-color: black;
-            padding: 15px 10px;
-            color: white;
-        }
-
-        .navbar a {
-            color: white;
-            margin-right: 20px;
-            text-decoration: none;
-        }
-
-        .navbar a:hover {
-            text-decoration: underline;
-        }
-
-        .container {
-            background-color: white;
-            padding: 20px 25px;
-            margin-top: 40px;
-            border-radius: 5px;
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
-        }
-
-        .select2-container {
-            width: 100% !important;
-        }
-
-        ul.flashes {
-            list-style-type: none;
-            padding: 0;
-            margin-bottom: 20px;
-        }
-
-        ul.flashes li {
-            margin: 5px 0;
-            background-color: #e74c3c;
-            color: white;
-            padding: 10px;
-            border-radius: 3px;
-        }
-    </style>
 </head>
 
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark navbar-custom">
+    <nav class="navbar navbar-expand-lg top-sticky">
         <div class="container-fluid">
-            <a class="navbar-brand" href="/">Onwords</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
+            <a class="navbar-brand" href="/"><img src="../static/images/logo.png" alt="" class="img-fluid logo"></a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"><span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     {% if role != 'PR' %}
-                        <li class="nav-item"><a class="nav-link" href="/create_staff">Create Staff</a></li>
-                        <li class="nav-item"><a class="nav-link" href="/create_client">Create Client</a></li>
-                        <li class="nav-item"><a class="nav-link" href="/client/profile">Client Profile</a></li>
-                        <li class="nav-item"><a class="nav-link" href="/my_schedule">My Schedule</a></li>
-                        <li class="nav-item"><a class="nav-link" href="/pod">Pod</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/create_staff">Create Staff</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/create_client">Create Client</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/client/profile">Client Profile</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/my_schedule">My Schedule</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="/pod">Pod</a></li>
                     {% else %}
-                        <li class="nav-item"><a class="nav-link" href="/client/profile">Client Profile</a></li>
-                        <li class="nav-item"><a class="nav-link" href="/my_schedule">My Schedule</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/client/profile">Client Profile</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/my_schedule">My Schedule</a></li>
                     {% endif %}
                 </ul>
-                <span class="navbar-text welcome-text">Welcome, {{ username }} | Role: {{ role }} | Pod: {{ pod }}</span>
-                <a class="btn btn-outline-light" href="/logout">Logout</a>
+                <span><img src="../static/images/user-icon.png" alt="" class="img-fluid user-icon"
+                        onclick='user()'></span>
+                <span class="navbar-text welcome-text"><span class="user-name-text">{{ username }} </span><br> <span
+                        class="user-name-text">{{ role }}</span> <br> Pod: {{ pod }}</span>
+                <a class="logout-button" href="/logout"><img src="../static/images/logout-img.svg" alt="logout"
+                        class="img-fluid"></a>
             </div>
         </div>
     </nav>
@@ -100,23 +57,23 @@
         {% endif %}
         {% endwith %}
 
-        <h2>Create a Pod</h2>
+       <center> <h2 class="my-3">Create a Pod</h2></center>
 
-        <form action="/pod" method="post" class="mt-3">
-            <div class="form-group">
-                <label for="pod_name">Pod Name:</label>
-                <input type="text" id="pod_name" name="pod_name" class="form-control" required>
+        <form action="/pod" method="post" class="mt-3 pod-form">
+            <div class="">
+                <label for="pod_name">Pod Name:</label><br>
+                <input type="text" id="pod_name" name="pod_name" class="" required>
             </div>
-            <div class="form-group">
-                <label for="members">Add Staff Members:</label>
-                <select class="select-staff form-control" id="members" name="members" multiple required>
+            <div class="">
+                <label for="members">Add Staff Members:</label><br>
+                <select class="select-staff" id="members" name="members" multiple required>
                     {% for name, uid in staff_zip %}
                     <option value="{{ uid }}">{{ name }}</option>
                     {% endfor %}
                 </select>
             </div>
 
-            <button type="submit" class="btn btn-primary">Create Pod</button>
+            <center><button type="submit" class="btns my-4">Create Pod</button></center>
         </form>
     </div>
 
@@ -125,6 +82,13 @@
             $('.select-staff').select2();
         });
     </script>
+     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+      <!-- script start -->
+      <script src="../static/js/bootstrap.bundle.js"></script>
+      <script src="../static/js/bootstrap.min.js"></script>
+      <script src="../static/js/main.js"></script>
+      <!-- script end -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
 </body>
 
