@@ -1,10 +1,6 @@
 import requests
 
-<<<<<<< HEAD
 fast_api_server_ip = "192.168.1.116:8000"
-=======
-fast_api_server_ip = "192.168.1.140:8000"
->>>>>>> 76f4ed3c7f5634f0b446bb6cfe48dbfe7eb9cb04
 
 from datetime import datetime
 

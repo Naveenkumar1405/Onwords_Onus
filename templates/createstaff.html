@@ -1,201 +1,239 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-    <style>
-        body {
-            font-family: 'Open Sans', sans-serif;
-            background-color: #f4f4f4;
-        }
-    
-        .navbar {
-            background-color: #333;
-            padding: 10px 20px;
-            color: white;
-        }
-    
-        .navbar a {
-            color: white;
-            margin-right: 20px;
-            padding: 8px 15px;
-            text-decoration: none;
-            transition: background-color 0.3s;
-        }
-    
-        .navbar a:hover {
-            background-color: #555;
-            border-radius: 5px;
-        }
-    
-        h1, h2 {
-            color: #333;
-        }
-    
-        form {
-            background-color: white;
-            padding: 20px;
-            border-radius: 5px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            margin: 20px;
-        }
-    
-        label {
-            font-weight: 600;
-            margin-right: 10px;
-        }
-    
-        input[type="submit"] {
-            background-color: #007BFF;
-            color: white;
-            border: none;
-            padding: 10px 15px;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-    
-        input[type="submit"]:hover {
-            background-color: #0056b3;
-        }
-    
-        input, select {
-            margin-bottom: 10px;
-            width: 100%;
-            padding: 10px;
-            border-radius: 5px;
-            border: 1px solid #ccc;
-        }
-    </style>
-    
-    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600&display=swap" rel="stylesheet">
-    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <meta charset='utf-8'>
     <meta http-equiv='X-UA-Compatible' content='IE=edge'>
     <title>Create Staff</title>
     <meta name='viewport' content='width=device-width, initial-scale=1'>
-    
-    <script src='main.js'></script>
+    <!-- bootstarp links -->
+    <link rel="stylesheet" href="../static/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../static/css/main.css">
+    <!-- bootstarp links -->
+
 </head>
+
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark navbar-custom">
+    <nav class="navbar navbar-expand-lg">
         <div class="container-fluid">
-            <a class="navbar-brand" href="/">Onwords</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
+            <a class="navbar-brand" href="/"><img src="../static/images/logo.png" alt="" class="img-fluid logo"></a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"><span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     {% if role != 'PR' %}
-                        <li class="nav-item"><a class="nav-link" href="/create_staff">Create Staff</a></li>
-                        <li class="nav-item"><a class="nav-link" href="/create_client">Create Client</a></li>
-                        <li class="nav-item"><a class="nav-link" href="/client/profile">Client Profile</a></li>
-                        <li class="nav-item"><a class="nav-link" href="/my_schedule">My Schedule</a></li>
-                        <li class="nav-item"><a class="nav-link" href="/pod">Pod</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="/create_staff">Create Staff</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/create_client">Create Client</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/client/profile">Client Profile</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/my_schedule">My Schedule</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/pod">Pod</a></li>
                     {% else %}
-                        <li class="nav-item"><a class="nav-link" href="/client/profile">Client Profile</a></li>
-                        <li class="nav-item"><a class="nav-link" href="/my_schedule">My Schedule</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/client/profile">Client Profile</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/my_schedule">My Schedule</a></li>
                     {% endif %}
                 </ul>
-                <ul>
-                <span class="navbar-text welcome-text">Welcome, {{ username }} | Role: {{ role }} | Pod: {{ pod }}</span>
-                <a class="btn btn-outline-light" href="/logout">Logout</a>
-                </ul>
+                <span><img src="../static/images/user-icon.png" alt="" class="img-fluid user-icon"
+                        onclick='user()'></span>
+                <span class="navbar-text welcome-text"><span class="user-name-text">{{ username }} </span><br> <span
+                        class="user-name-text">{{ role }}</span> <br> Pod: {{ pod }}</span>
+                <a class="logout-button" href="/logout"><img src="../static/images/logout-img.svg" alt="logout"
+                        class="img-fluid"></a>
             </div>
         </div>
     </nav>
+
+    <div class="container">
+        <center>
+            <h2 class="mt-4">Create staff</h2>
+        </center>
+        <form action="/create_staff" method="post" class="p-3">
+            <div class="create-staff-form-con">
+                <div class="create-staff-personal">
+                    <div class="form-grp">
+                        <label for="name">Name:</label><br>
+                        <input type="text" id="name" name="name" required>
+                    </div>
+
+                    <div class="form-grp">
+                        <label for="phone">Phone:</label><br>
+                        <input type="text" id="phone" name="phone" required>
+                    </div>
+
+                    <div class="form-grp">
+                        <label for="email">Email:</label><br>
+                        <input type="email" id="email" name="email" required>
+                    </div>
+
+                    <div class="form-grp">
+                        <label for="department">Department:</label><br>
+                        <input type="text" id="department" name="department" required>
+                    </div>
+
+                    <div class="form-grp">
+                        <label for="dob">Date of Birth:</label><br>
+                        <input type="date" id="dob" name="dob" required>
+                    </div>
+
+                    <div class="form-grp">
+                        <label for="blood_group">Blood Group:</label><br>
+                        <input type="text" id="blood_group" name="blood_group" required>
+                    </div>
+
+                    <div class="form-grp">
+                        <label for="profile_pic_url">Profile Picture URL:</label><br>
+                        <input type="text" id="profile_pic_url" name="profile_pic_url">
+                    </div>
+
+                    <div class="form-grp">
+                        <label for="address">Address:</label><br>
+                        <input type="text" id="address" name="address" required>
+                    </div>
+                    <div class="bottom-btns">
+                        <div class="prev-btn "></div>
+                        <div class="next-btn btns" onclick="familyForm()">Next</div>
+                    </div>
+                </div>
+            </div>
+            <div class="family-form-con">
+                <div class="family-form">
+                    <div class="form-grp">
+                        <label for="father_name">Father's Name:</label>
+                        <input type="text" id="father_name" name="family_father_name" required>
+                    </div>
+
+                    <div class="form-grp">
+                        <label for="mother_name">Mother's Name:</label>
+                        <input type="text" id="mother_name" name="family_mother_name" required>
+                    </div>
+
+                    <div class="form-grp">
+                        <label for="spouse_name">Spouse's Name:</label>
+                        <input type="text" id="spouse_name" name="family_spouse_name">
+                    </div>
+
+                    <div class="form-grp">
+                        <label for="sibling_name">Sibling's Name:</label>
+                        <input type="text" id="sibling_name" name="family_sibling_name">
+                    </div>
+
+                    <div class="form-grp">
+                        <label for="child_name">Child's Name:</label>
+                        <input type="text" id="child_name" name="family_child_name">
+                    </div>
+
+                    <div class="form-grp">
+                        <label for="designation">Designation:</label>
+                        <input type="text" id="designation" name="designation" required>
+                    </div>
+
+                    <div class="form-grp">
+                        <label for="emp_id">Employee ID:</label>
+                        <input type="text" id="emp_id" name="emp_id" required>
+                    </div>
+                    <div class="bottom-btns">
+                        <div class="prev-btn btns" onclick="personalback()">Prev</div>
+                        <div class="next-btn btns" onclick="bankForm()">Next</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bankform-con">
+                <div class="bank-form">
+
+                    <div class="form-grp">
+                        <label for="acc_no">Account Number:</label>
+                        <input type="text" id="acc_no" name="bank_data_acc_no" required>
+                    </div>
+
+                    <div class="form-grp">
+                        <label for="acc_holder_name">Account Holder Name:</label>
+                        <input type="text" id="acc_holder_name" name="bank_data_acc_holder_name" required>
+                    </div>
+                    <div class="form-grp">
+                        <label for="branch">Branch:</label>
+                        <input type="text" id="branch" name="bank_data_branch" required>
+                    </div>
+
+                    <div class="form-grp">
+                        <label for="ifsc_code">IFSC Code:</label>
+                        <input type="text" id="ifsc_code" name="bank_data_ifsc_code" required>
+                    </div>
+
+                    <div class="form-grp">
+                        <label for="acc_type">Account Type:</label>
+                        <input type="text" id="acc_type" name="bank_data_acc_type" required>
+                    </div>
+                    <div class="form-grp">
+                        <label for="mode_of_transport">Mode of Transport:</label>
+                        <input type="text" id="mode_of_transport" name="mode_of_transport" required>
+                    </div>
+
+
+                    <div class="form-grp">
+                        <label for="laptop">Laptop:</label>
+                        <input type="text" id="laptop" name="laptop">
+                    </div>
+                    <div class="bottom-btns">
+                        <div class="prev-btn btns" onclick="backbank()">Prev</div>
+                        <div class="next-btn btns" onclick="govt()">Next</div>
+                    </div>
+                </div>
+            </div>
+            <div class="govt-form-con">
+                <div class="govt-form">
+
+
+                    <div class="form-grp">
+                        <label for="aadhar_no">Aadhar Number:</label>
+                        <input type="text" id="aadhar_no" name="government_id_aadhar_no" required>
+                    </div>
     
-    <div class="container mt-5">
-        <h1 class="mb-4">Create staff</h1>
-        <form action="/create_staff" method="post" class="p-5 bg-white rounded shadow-sm">
-        <label for="name">Name:</label>
-        <input type="text" id="name" name="name" required><br><br>
+                    <div class="form-grp">
+                        <label for="pan_no">PAN Number:</label>
+                        <input type="text" id="pan_no" name="government_id_pan_no" required>
+                    </div>
+    
+                    <div class="form-grp">
+                        <div class="form-group">
+                            <label for="role">Select role:</label>
+                            <select class="form-control" id="role" name="role">
+    
+                                <option value="Super Admin"> Super Admin</option>
+                                <option value="Admin">Admin</option>
+                                <option value="PR"> PR</option>
+                                <option value="Installation"> Installation</option>
+    
+                            </select>
+                        </div>
+                        <div class="form-grp">
+                            <label for="role">Password:</label>
+                            <input type="Password" id="Password" name="Password" required>
+                        </div>
+    
+                        <center>
+                            <p type="submit" class="btns" name="staffcreate" value="Create staff">Create Staff</p>
+                        </center>
+                    </div>
+                </div>
+                <div class="bottom-btns">
+                    <div class="prev-btn btns" onclick="backgovt()">Prev</div>
+                    <div class="next-btn "></div>
+                </div>
+            </div>
+        </form>
 
-        <label for="phone">Phone:</label>
-        <input type="text" id="phone" name="phone" required><br><br>
 
-        <label for="email">Email:</label>
-        <input type="email" id="email" name="email" required><br><br>
 
-        <label for="department">Department:</label>
-        <input type="text" id="department" name="department" required><br><br>
-
-        <label for="dob">Date of Birth:</label>
-        <input type="date" id="dob" name="dob" required><br><br>
-
-        <label for="blood_group">Blood Group:</label>
-        <input type="text" id="blood_group" name="blood_group" required><br><br>
-
-        <label for="profile_pic_url">Profile Picture URL:</label>
-        <input type="text" id="profile_pic_url" name="profile_pic_url"><br><br>
-
-        <label for="address">Address:</label>
-        <input type="text" id="address" name="address" required><br><br>
-
-        <h2>Family</h2>
-        <label for="father_name">Father's Name:</label>
-        <input type="text" id="father_name" name="family_father_name" required><br><br>
-
-        <label for="mother_name">Mother's Name:</label>
-        <input type="text" id="mother_name" name="family_mother_name" required><br><br>
-
-        <label for="spouse_name">Spouse's Name:</label>
-        <input type="text" id="spouse_name" name="family_spouse_name"><br><br>
-
-        <label for="sibling_name">Sibling's Name:</label>
-        <input type="text" id="sibling_name" name="family_sibling_name"><br><br>
-
-        <label for="child_name">Child's Name:</label>
-        <input type="text" id="child_name" name="family_child_name"><br><br>
-
-        <label for="designation">Designation:</label>
-        <input type="text" id="designation" name="designation" required><br><br>
-
-        <label for="emp_id">Employee ID:</label>
-        <input type="text" id="emp_id" name="emp_id" required><br><br>
-
-        <h2>Bank Data</h2>
-        <label for="acc_no">Account Number:</label>
-        <input type="text" id="acc_no" name="bank_data_acc_no" required><br><br>
-
-        <label for="acc_holder_name">Account Holder Name:</label>
-        <input type="text" id="acc_holder_name" name="bank_data_acc_holder_name" required><br><br>
-
-        <label for="branch">Branch:</label>
-        <input type="text" id="branch" name="bank_data_branch" required><br><br>
-
-        <label for="ifsc_code">IFSC Code:</label>
-        <input type="text" id="ifsc_code" name="bank_data_ifsc_code" required><br><br>
-
-        <label for="acc_type">Account Type:</label>
-        <input type="text" id="acc_type" name="bank_data_acc_type" required><br><br>
-
-        <label for="mode_of_transport">Mode of Transport:</label>
-        <input type="text" id="mode_of_transport" name="mode_of_transport" required><br><br>
-
-        <label for="laptop">Laptop:</label>
-        <input type="text" id="laptop" name="laptop"><br><br>
-
-        <h2>Government ID</h2>
-        <label for="aadhar_no">Aadhar Number:</label>
-        <input type="text" id="aadhar_no" name="government_id_aadhar_no" required><br><br>
-
-        <label for="pan_no">PAN Number:</label>
-        <input type="text" id="pan_no" name="government_id_pan_no" required><br><br>
-
-        <div class="form-group"> 
-            <label for="role">Select role:</label>
-            <select class="form-control" id="role" name="role">
-
-            <option value="Super Admin"> Super Admin</option>
-            <option value="Admin">Admin</option>
-            <option value="PR"> PR</option>
-            <option value="Installation"> Installation</option>
-
-        </select><br><br>
-        <label for="role">Password:</label>
-        <input type="Password" id="Password" name="Password" required><br><br>
-
-        <input type="submit" class="btn btn-primary mt-3" name="staffcreate" value="Create staff">
-    </form>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+        <!-- script start -->
+        <script src="../static/js/bootstrap.bundle.js"></script>
+        <script src="../static/js/bootstrap.min.js"></script>
+        <script src="../static/js/main.js"></script>
+        <!-- script end -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+            crossorigin="anonymous"></script>
 </body>
+
 </html>

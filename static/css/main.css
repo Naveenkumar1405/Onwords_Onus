@@ -8,7 +8,10 @@
 body {
     background-color: #fff;
 }
-
+button{
+    border: none;
+    outline: none;
+}
 .logo {
     width: 100px;
 }
@@ -84,5 +87,196 @@ body {
     left: -5px;
     top: 5px;
 }
+.address-client{
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+}
 
 
+/* home css start*/
+
+.navbar{
+    background-color: #5a5e68;
+    color: #fffcf5;
+    position: relative;
+    display: subgrid;
+    align-items: center ;
+    width: 100%;
+    height: 60px;
+}
+.collapse{
+padding-left: 100px;
+}
+.nav-link{
+    color: #fffcf5;
+    font-size: 16px;
+}
+.nav-link:hover,.navlink:focus,.navlink,.active {
+    color: #fffcf5;
+    font-weight: bold;
+}
+.user-icon{
+    width: 30px;
+    height: 30px;
+    background-color: #fffcf5;
+    box-shadow: 0 0 1px 0.6 #fff;
+    border-radius: 50%;
+    margin: 0 20px;
+    cursor: pointer;
+}
+.head-table{
+    background-color: #5a5e68;
+    color: #fffcf5;
+}
+.welcome-text{
+    background-color: #5a5e68;
+    padding: 10px;
+    position: absolute;
+    bottom: -90px;
+    right: 30px;
+    display: none;
+    border-radius: 10px;
+    text-align: center;
+}
+.user-name-text{
+    font-size: 16px;
+    font-weight: bold;
+}
+.logout-button{
+    width: 30px;
+    height: 30px;
+    background-color: #fffcf5;
+    box-shadow: 0 0 1px 0.6 #fff;
+    border-radius: 50%;
+    padding: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.logout-button img{
+    width: 25px;
+    height: 25px;
+}
+.form-container{
+    width: 30%;
+    height: 40px;
+    background-color: #5a5e68;
+    color: #fffcf5;
+    display: flex;
+    align-items: center;
+    padding: 0px 30px;
+    border-radius: 20px;
+}
+.form-container label{
+    font-size: 18px;
+    font-weight: bold;
+}
+.form-control ,.form-control:focus,.form-control:hover,.form-control:active{
+    min-width: 80%;
+    background-color:#5a5e68;
+    border: none;
+    color: #fffcf5;
+    outline: none;
+}
+
+/* home css end*/
+
+/* --create -staff start */
+.create-staff-personal,.client-create-form,.family-form,.bank-form,.govt-form{
+    background-color: #ededed;
+    box-shadow: 1px 1px 12px #a4a4a4;
+    border-radius: 10px;
+    width: 100%;
+    height: 90%;
+    min-height: 90%;
+    max-height: 90%;
+    display: flex;
+    flex-wrap: wrap;
+}
+.family-form-con,.bankform-con,.govt-form-con{
+    display: none;
+}
+.form-grp{
+    width: 45%;
+    margin: 20px auto;
+
+}
+.form-group label{
+    display: block;
+}
+.form-grp input,.form-grp select,.rating{
+    width: 90%;
+    background-color: transparent;
+    outline: none;
+    border: 1px soild #ccc;
+    border-radius: 10px;
+    padding: 4px 10px;
+}
+.rating{
+    min-width: 90%;
+}
+.bottom-btns{
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    width: 100%;
+    height: 80px;
+    margin: 10px 0px;
+}
+.btns{
+    background-color: #5a5e68;
+    color: #fffcf5;
+    font-size: 18px;
+    padding: 5px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    width: fit-content;
+}
+/* --create -staff end */
+/* -------client-create-form start */
+.client-create-form{
+    display: flex;
+    flex-direction: column;
+    /* align-items: center; */
+    justify-content: center;
+    background-color: #ededed;
+    box-shadow: 1px 1px 12px #a4a4a4;
+    border-radius: 10px;
+    width: 70%;
+    height: 90%;
+    min-height: 90%;
+    max-height: 90%;
+    margin: 0 auto;
+}
+.client-create-form input{
+    background-color: transparent;
+    border: 1px solid #ccc;
+}
+.upload-cv {
+    width: 80%;
+    height: 60px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    /* justify-content: center; */
+    white-space: nowrap;
+}
+.upload-cv input{
+    width: 100%;
+}
+.main-create-client{
+    width: 80%;
+    margin: 0 auto;
+}
+.f-client{
+    display: flex;
+    align-items: center;
+}
+.enqury{
+    width: 100%;
+    display: flex;
+    align-items: center;
+    
+}
+/* -------client-create-form end */
