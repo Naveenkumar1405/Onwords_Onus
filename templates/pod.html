@@ -3,12 +3,14 @@
 
 <head>
     <title>Create a Pod</title>
-    
+
     <!-- Bootstrap CSS -->
-   <!-- bootstarp links -->
-   <link rel="stylesheet" href="../static/css/bootstrap.min.css">
-   <link rel="stylesheet" href="../static/css/main.css">
-   <!-- bootstarp links -->
+    <!-- bootstarp links -->
+    <link rel="stylesheet" href="../static/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../static/css/main.css">
+    <link rel="stylesheet" href="../static/css/responsive.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <!-- bootstarp links -->
     <!-- Select2 CSS -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
 
@@ -18,10 +20,11 @@
     <nav class="navbar navbar-expand-lg top-sticky">
         <div class="container-fluid">
             <a class="navbar-brand" href="/"><img src="../static/images/logo.png" alt="" class="img-fluid logo"></a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"><span>
-            </button>
+            <div class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"><span class="text-white onnav"><i class="fa-solid fa-bars"></i></span>
+                    <span class="off text-white"><i class="fa-solid fa-x"></i></span><span>
+            </div>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     {% if role != 'PR' %}
@@ -57,39 +60,44 @@
         {% endif %}
         {% endwith %}
 
-       <center> <h2 class="my-3">Create a Pod</h2></center>
+        <center>
+            <h2 class="my-3">Create a Pod</h2>
+        </center>
+        <div class="pod-form">
+            <form action="/pod" method="post" class="mt-3">
+                <div class="">
+                    <label for="pod_name">Pod Name:</label><br>
+                    <input type="text" id="pod_name" name="pod_name" class="" required>
+                </div>
+                <div class="">
+                    <label for="members">Add Staff Members:</label><br>
+                    <select class="select-staff" id="members" name="members" multiple required>
+                        {% for name, uid in staff_zip %}
+                        <option value="{{ uid }}">{{ name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
 
-        <form action="/pod" method="post" class="mt-3 pod-form">
-            <div class="">
-                <label for="pod_name">Pod Name:</label><br>
-                <input type="text" id="pod_name" name="pod_name" class="" required>
-            </div>
-            <div class="">
-                <label for="members">Add Staff Members:</label><br>
-                <select class="select-staff" id="members" name="members" multiple required>
-                    {% for name, uid in staff_zip %}
-                    <option value="{{ uid }}">{{ name }}</option>
-                    {% endfor %}
-                </select>
-            </div>
+                <center><button type="submit" class="btns my-4">Create Pod</button></center>
+            </form>
+        </div>
 
-            <center><button type="submit" class="btns my-4">Create Pod</button></center>
-        </form>
     </div>
 
     <script>
-        $(document).ready(function() {
+        $(document).ready(function () {
             $('.select-staff').select2();
         });
     </script>
-     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
-      <!-- script start -->
-      <script src="../static/js/bootstrap.bundle.js"></script>
-      <script src="../static/js/bootstrap.min.js"></script>
-      <script src="../static/js/main.js"></script>
-      <!-- script end -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+    <!-- script start -->
+    <script src="../static/js/bootstrap.bundle.js"></script>
+    <script src="../static/js/bootstrap.min.js"></script>
+    <script src="../static/js/main.js"></script>
+    <!-- script end -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        crossorigin="anonymous"></script>
 </body>
 
 </html>
