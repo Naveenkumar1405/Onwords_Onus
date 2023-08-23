@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <meta charset='utf-8'>
     <meta http-equiv='X-UA-Compatible' content='IE=edge'>
@@ -8,16 +9,20 @@
     <!-- bootstarp links -->
     <link rel="stylesheet" href="../static/css/bootstrap.min.css">
     <link rel="stylesheet" href="../static/css/main.css">
-    <!-- bootstarp links --> 
+    <link rel="stylesheet" href="../static/css/responsive.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <!-- bootstarp links -->
 </head>
+
 <body>
     <nav class="navbar navbar-expand-lg top-sticky">
         <div class="container-fluid">
             <a class="navbar-brand" href="/"><img src="../static/images/logo.png" alt="" class="img-fluid logo"></a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"><span>
-            </button>
+            <div class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"><span class="text-white onnav"><i class="fa-solid fa-bars"></i></span>
+                    <span class="off text-white"><i class="fa-solid fa-x"></i></span><span>
+            </div>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     {% if role != 'PR' %}
@@ -43,11 +48,12 @@
 
     <div class="container">
         <div>
-            <div >
+            <div>
                 <form action="/client/profile" method="post" class="search-form">
-                    <button type="submit" value="Search" class="search-icon"><img src="../static/images/search-icon.svg" alt="" class="img-fluid"></button>
+                    <button type="submit" value="Search" class="search-icon"><img src="../static/images/search-icon.svg"
+                            alt="" class="img-fluid"></button>
                     <input type="text" name="client_number" placeholder="Client number">
-                   
+
                 </form>
                 {% if error %}
                 <p style="color: red;">{{error}}</p>
@@ -66,77 +72,91 @@
                         <option value="advanced">Advanced</option>
                     </select>
                 </form>
-            
-            <form action="/client/notes" method="post" class="notes-form">
-                <textarea name="notes" placeholder="Add notes..." rows="5"></textarea>
-                <input type="hidden" name="client_number" value="{{ client.phone }}">
-                <input type="hidden" name="pod" value="{{ pod }}">
-                <input type="hidden" name="role" value="{{ role }}">
-                <input type="hidden" name="username" value="{{ username }}">
-                <input class="mx-2 btns" type="submit" value="Add Note">
-            </form>
-            <form action="/client/schedule" method="post" class="notes-form1">
-                <label for="schedule_type" class="">Schedule:</label>
-                <select name="schedule_type" class="mb-1">
-                    <option value="call">Call</option>
-                    <option value="visit">Visit</option>
-                    <option value="installation">Installation</option>
-                </select><br>
-                <input type="datetime-local" name="schedule_time" required>
-                <input type="hidden" name="client_number" value="{{ client.phone }}">
-                <input type="hidden" name="pod" value="{{ pod }}">
-                <input type="hidden" name="role" value="{{ role }}">
-                <input type="hidden" name="username" value="{{ username }}">
-                <input type="submit" class="btns mt-1" value="Schedule">
-            </form>
-        </div>
+
+                <form action="/client/notes" method="post" class="notes-form">
+                    <textarea name="notes" placeholder="Add notes..." rows="5"></textarea>
+                    <input type="hidden" name="client_number" value="{{ client.phone }}">
+                    <input type="hidden" name="pod" value="{{ pod }}">
+                    <input type="hidden" name="role" value="{{ role }}">
+                    <input type="hidden" name="username" value="{{ username }}">
+                    <input class="mx-2 btns" type="submit" value="Add Note">
+                </form>
+                <form action="/client/schedule" method="post" class="notes-form1">
+                    <label for="schedule_type" class="">Schedule:</label>
+                    <select name="schedule_type" class="mb-1">
+                        <option value="call">Call</option>
+                        <option value="visit">Visit</option>
+                        <option value="installation">Installation</option>
+                    </select><br>
+                    <input type="datetime-local" name="schedule_time" required>
+                    <input type="hidden" name="client_number" value="{{ client.phone }}">
+                    <input type="hidden" name="pod" value="{{ pod }}">
+                    <input type="hidden" name="role" value="{{ role }}">
+                    <input type="hidden" name="username" value="{{ username }}">
+                    <input type="submit" class="btns mt-1" value="Schedule">
+                </form>
+            </div>
             {% endif %}
         </div>
         <div>
             <div class="client-details">
                 {% if client %}
-              
-                    <table class="table">
-                       <tr>
+
+                <table class="table">
+                    <tr>
                         <th>Name</th>
                         <td>{{ client.name }}</td>
-                       </tr>
-                       <tr>
+                    </tr>
+                    <tr>
                         <th>Phone</th>
                         <td>
                             {{ client.phone }}
                         </td>
-                       </tr>
-                       <tr>
+                    </tr>
+                    <tr>
                         <th>Pod ID:</th>
                         <td>{{ client.pod_id }}</td>
-                       </tr>
-                       <tr>
+                    </tr>
+                    <tr>
                         <th>Rating:</th>
                         <td>{{ client.rating }}</td>
-                       </tr>
-                       <tr>
+                    </tr>
+                    <tr>
                         <th>Address:</th>
-                        <td>{{ client.address.door_no }}, {{ client.address.street }}, {{ client.address.landmark }}, {{ client.address.city }}, {{ client.address.state }}, {{ client.address.pincode }}</td>
-                       </tr>
-                       <tr>
+                        <td>{{ client.address.door_no }}, {{ client.address.street }}, {{ client.address.landmark }}, {{
+                            client.address.city }}, {{ client.address.state }}, {{ client.address.pincode }}</td>
+                    </tr>
+                    <tr>
                         <th>Enquiry:</th>
-                        <td> Created by: {{ client.enquiry.created_by }}, Enquired for: {{ client.enquiry.enquired_for }}, Lead source: {{ client.enquiry.lead_source }}</td>
-                       </tr>
-                    </table>
-                    {% for note in notes %}
-                    <table class="table">
-                        <tr><th>Date:</th> <td>{{ note.date }}</td></tr>
-                        <tr><th>Time:</th> <td>{{ note.time }}</td></tr>
-                        <tr><th>User ID:</th> <td>{{ note.pr_name }}</td></tr>
-                        <tr><th>Note:</th> <td>{{ note.notes }}</td></tr>
-                    </table>
-                    <hr>
-                    {% endfor %}
-                </div>
-                {% endif %}
+                        <td> Created by: {{ client.enquiry.created_by }}, Enquired for: {{ client.enquiry.enquired_for
+                            }}, Lead source: {{ client.enquiry.lead_source }}</td>
+                    </tr>
+                </table>
+                {% for note in notes %}
+                <table class="table">
+                    <tr>
+                        <th>Date:</th>
+                        <td>{{ note.date }}</td>
+                    </tr>
+                    <tr>
+                        <th>Time:</th>
+                        <td>{{ note.time }}</td>
+                    </tr>
+                    <tr>
+                        <th>User ID:</th>
+                        <td>{{ note.pr_name }}</td>
+                    </tr>
+                    <tr>
+                        <th>Note:</th>
+                        <td>{{ note.notes }}</td>
+                    </tr>
+                </table>
+                <hr>
+                {% endfor %}
             </div>
+            {% endif %}
         </div>
+    </div>
     </div>
     {% if client %}
     <script>
@@ -149,18 +169,14 @@
         }
     </script>
     {% endif %}
-     <!-- script start -->
-     <script src="../static/js/bootstrap.bundle.js"></script>
-     <script src="../static/js/bootstrap.min.js"></script>
-     <script src="../static/js/main.js"></script>
-     <!-- script end -->
-     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
-         integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
-         crossorigin="anonymous"></script>
+    <!-- script start -->
+    <script src="../static/js/bootstrap.bundle.js"></script>
+    <script src="../static/js/bootstrap.min.js"></script>
+    <script src="../static/js/main.js"></script>
+    <!-- script end -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+        crossorigin="anonymous"></script>
 </body>
+
 </html>
-
-
-
-
-

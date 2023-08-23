@@ -1,0 +1,42 @@
+@media screen and (max-width:1000px){
+    .collapse{
+        /* padding-left: 70px; */
+        background-color: #5a5e68;
+        }
+        .closemenu{
+            display: none;
+        }
+        .active {
+            color: #fffcf5 !important;
+            margin: 0px !important;
+            font-weight: 900;
+            border-bottom: none !important;
+        }
+        .user-icon{
+            margin: 10px 0px;
+        }
+        .form-container{
+            width: 40%;
+        }
+        .form-grp{
+            width: 80% !important;
+            margin: 4px auto;
+        }
+        .client-create-form{
+            width: 95%;
+        }
+        .f-client{
+            flex-direction: column;
+        }
+        .enqury{
+            flex-direction: column;
+        }
+        .status-row{
+            flex-direction: column;
+            padding: 10px;
+        }
+        .select-main{
+            width: 90%;
+        }
+        .select-main
+}

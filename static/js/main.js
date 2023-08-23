@@ -36,3 +36,19 @@ function backgovt(){
     document.querySelector('.govt-form-con').style.display='none'
     document.querySelector('.bankform-con').style.display='block'
 }
+
+// -------------mobile responsive -----------
+
+const onBtn = document.querySelector('.onnav')
+const offBtn = document.querySelector('.off')
+const navbarCollapse = document.querySelector('.collapse')
+onBtn.addEventListener('click', () => {
+  offBtn.style.display = 'block'
+  onBtn.style.display = 'none'
+  navbarCollapse.style.display = 'block'
+})
+offBtn.addEventListener('click', () => {
+  onBtn.style.display = 'block'
+  offBtn.style.display = 'none'
+  navbarCollapse.style.display = 'none'
+})
