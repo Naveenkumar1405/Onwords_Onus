@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="../static/css/responsive.css">
     <link rel="stylesheet" href="/path/to/Responsive-Table.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-    <!-- bootstarp links -->  
+    <!-- bootstarp links -->
 </head>
 
 <body>
@@ -17,36 +17,38 @@
         <div class="container-fluid">
             <a class="navbar-brand" href="/"><img src="../static/images/logo.png" alt="" class="img-fluid logo"></a>
             <div class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
-            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"><span class="text-white onnav"><i class="fa-solid fa-bars"></i></span>
-              <span class="off text-white"><i class="fa-solid fa-x"></i></span><span>
-          </div>
+                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"><span class="text-white onnav"><i class="fa-solid fa-bars"></i></span>
+                    <span class="off text-white"><i class="fa-solid fa-x"></i></span><span>
+            </div>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     {% if role != 'PR' %}
-                        <li class="nav-item"><a class="nav-link" href="/create_staff">Create Staff</a></li>
-                        <li class="nav-item"><a class="nav-link" href="/create_client">Create Client</a></li>
-                        <li class="nav-item"><a class="nav-link" href="/client/profile">Client Profile</a></li>
-                        <li class="nav-item"><a class="nav-link" href="/my_schedule">My Schedule</a></li>
-                        <li class="nav-item"><a class="nav-link" href="/pod">Pod</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/create_staff">Create Staff</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/create_client">Create Client</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/client/profile">Client Profile</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/my_schedule">My Schedule</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/pod">Pod</a></li>
                     {% else %}
-                        <li class="nav-item"><a class="nav-link" href="/client/profile">Client Profile</a></li>
-                        <li class="nav-item"><a class="nav-link" href="/my_schedule">My Schedule</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/client/profile">Client Profile</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/my_schedule">My Schedule</a></li>
                     {% endif %}
                 </ul>
-                <span><img src="../static/images/user-icon.png" alt="" class="img-fluid user-icon"onclick='user()'></span>
-                <span class="navbar-text welcome-text"><span class="user-name-text">{{ username }} </span><br> <span class="user-name-text">{{ role }}</span> <br> Pod: {{ pod }}</span>
-                <a class="logout-button" href="/logout"><img src="../static/images/logout-img.svg" alt="logout" class="img-fluid"></a>
+                <span><img src="../static/images/user-icon.png" alt="" class="img-fluid user-icon"
+                        onclick='user()'></span>
+                <span class="navbar-text welcome-text"><span class="user-name-text">{{ username }} </span><br> <span
+                        class="user-name-text">{{ role }}</span> <br> Pod: {{ pod }}</span>
+                <a class="logout-button" href="/logout"><img src="../static/images/logout-img.svg" alt="logout"
+                        class="img-fluid"></a>
             </div>
         </div>
     </nav>
-    
+
     <div class="container my-4">
         <div class="form-container">
             <label for="lead-in" class="me-2">Select State:</label>
             <form action="/" id="lead-incharge" name="state" method="post">
                 <select name="state" id="lead-in" onchange="leadIn()" class="form-control">
-                    
                     <option value="">Select</option>
                     {% for state in client_state %}
                     <h2>{{state}}</h2>
@@ -55,53 +57,58 @@
                 </select>
             </form>
         </div>
-    
-       <center><h2 class="my-4">New Clients</h2></center>
-     <div class="table-responsive table-mobile-responsive">
-        <table class="table text-center w-100">
-            <thead class="head-table">
-                <tr>
-                    <th>Name</th>
-                    <th>Phone</th>
-                    <th>Pod ID</th>
-                    <th>Rating</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for client in new_client_data %}
-                <tr class="clickable-row">
-                    <td>{{ client.name }}</td>
-                    <td>{{ client.phone }}</td>
-                    <td>{{ client.pod_id }}</td>
-                    <td>{{ client.rating }}</td>
-                    <form class="hidden-form" action="/client/profile" method="post">
-                        <input type="hidden" name="client_number" value="{{ client.phone }}">
-                    </form>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-     </div>
+
+        <center>
+            <h2 class="my-4 ">New Clients</h2>
+        </center>
+        <div class="table-responsive table-mobile-responsive">
+            <table class="table text-center">
+                <thead class="head-table">
+                    <tr>
+                        <th>Name</th>
+                        <th>Phone</th>
+                        <th>Pod ID</th>
+                        <th>Rating</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for client in new_client_data %}
+                    <tr class="clickable-row">
+                        <td>{{ client.name }}</td>
+                        <td>{{ client.phone }}</td>
+                        <td>{{ client.pod_id }}</td>
+                        <td>{{ client.rating }}</td>
+                        <form class="hidden-form" action="/client/profile" method="post">
+                            <input type="hidden" name="client_number" value="{{ client.phone }}">
+                        </form>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
     <script>
-       function leadIn() {
-              document.getElementById("lead-incharge").submit();
-            }
+        function leadIn() {
+            document.getElementById("lead-incharge").submit();
+        }
     </script>
     <script>
         const rows = document.querySelectorAll('.clickable-row');
         rows.forEach(row => {
-            row.addEventListener('click', function() {
+            row.addEventListener('click', function () {
                 this.querySelector('.hidden-form').submit();
             });
         });
     </script>
 
-  <!-- script start -->
-  <script src="../static/js/bootstrap.bundle.js"></script>
-  <script src="../static/js/bootstrap.min.js"></script>
-  <script src="../static/js/main.js"></script>
-  <!-- script end -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+    <!-- script start -->
+    <script src="../static/js/bootstrap.bundle.js"></script>
+    <script src="../static/js/bootstrap.min.js"></script>
+    <script src="../static/js/main.js"></script>
+    <!-- script end -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+        crossorigin="anonymous"></script>
 </body>
+
 </html>
