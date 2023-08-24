@@ -44,7 +44,7 @@
                 <span><img src="../static/images/user-icon.png" alt="" class="img-fluid user-icon"
                         onclick='user()'></span>
                 <span class="navbar-text welcome-text"><span class="user-name-text">{{ username }} </span><br> <span
-                        class="user-name-text">{{ role }}</span> <br> Pod: {{ pod }}</span>
+                        class="user-name-text">{{ role }}</span> <br>{{ pod }}</span>
                 <a class="logout-button" href="/logout"><img src="../static/images/logout-img.svg" alt="logout"
                         class="img-fluid"></a>
             </div>
@@ -82,7 +82,7 @@
                 <div class="address-client">
                     <div class="form-grp">
                         <label for="door_no">Door No:</label><br>
-                        <input type="text" class="" id="door_no" name="address_door_no">
+                        <input type="text" class="" id="door_no" name="address_door_no" required>
                     </div>
                     <div class="form-grp">
                         <label for="street">Street:</label><br>
@@ -131,7 +131,7 @@
                 </div>
 
                 <center>
-                    <p type="submit" class="btns">Submit</p>
+                    <button type="submit" value="submit" class='btns'>submit</button>
                 </center>
             </form>
         </div>

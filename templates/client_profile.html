@@ -39,7 +39,7 @@
                 <span><img src="../static/images/user-icon.png" alt="" class="img-fluid user-icon"
                         onclick='user()'></span>
                 <span class="navbar-text welcome-text"><span class="user-name-text">{{ username }} </span><br> <span
-                        class="user-name-text">{{ role }}</span> <br> Pod: {{ pod }}</span>
+                        class="user-name-text">{{ role }}</span> <br>{{ pod }}</span>
                 <a class="logout-button" href="/logout"><img src="../static/images/logout-img.svg" alt="logout"
                         class="img-fluid"></a>
             </div>
@@ -60,26 +60,25 @@
                 {% endif %}
             </div>
             {% if client %}
-            <div class="status-row">
-                <form action="/client/profile/{{client.phone}}/hot" method="post" class="select-main">
-                    <input type="hidden" name="client_number" value="{{ client_number }}">
-                    <select name="status" onchange="updateFormAction(this)">
-                        <option value="new">New</option>
-                        <option value="interested">Interested</option>
-                        <option value="hot">Hot</option>
-                        <option value="rejected">Rejected</option>
-                        <option value="installed">Installed</option>
-                        <option value="advanced">Advanced</option>
-                    </select>
-                </form>
-
+                <div class="status-row">
+                    <form action="/client/profile" method="post">
+                        <input type="hidden" name="client_number" value="{{ client_number }}">
+                        <select name="status" onchange="updateFormAction(this)">
+                            <option value="new">New</option>
+                            <option value="interested">Interested</option>
+                            <option value="hot">Hot</option>
+                            <option value="rejected">Rejected</option>
+                            <option value="installed">Installed</option>
+                            <option value="advanced">Advanced</option>
+                        </select>
+                    </form>
                 <form action="/client/notes" method="post" class="notes-form">
-                    <textarea name="notes" placeholder="Add notes..." rows="5"></textarea>
+                    <textarea name="notes" placeholder="Add notes..." rows="5" required></textarea>
                     <input type="hidden" name="client_number" value="{{ client.phone }}">
                     <input type="hidden" name="pod" value="{{ pod }}">
                     <input type="hidden" name="role" value="{{ role }}">
                     <input type="hidden" name="username" value="{{ username }}">
-                    <p class="mx-2 btns" type="submit" value="Add Note">Submit</p>
+                    <button class="mx-2 btns" type="submit" value="Add Note">Submit</button>
                 </form>
                 <form action="/client/schedule" method="post" class="notes-form1">
                     <label for="schedule_type" class="">Schedule:</label>
@@ -93,7 +92,7 @@
                     <input type="hidden" name="pod" value="{{ pod }}">
                     <input type="hidden" name="role" value="{{ role }}">
                     <input type="hidden" name="username" value="{{ username }}">
-                    <center><p type="submit" class="btns mt-1" value="Schedule">Schedule</p></center>
+                    <center><button type="submit" class="btns mt-1" value="Schedule">Schedule</button></center>
                 </form>
             </div>
             {% endif %}
@@ -164,7 +163,7 @@
             const selectedValue = selectElement.value;
             const clientPhone = '{{ client.phone }}';
             const form = selectElement.closest('form');
-            form.action = `/client/profile/${clientPhone}/${selectedValue}`;
+            form.action = `/client/profile`;
             form.submit();
         }
     </script>
