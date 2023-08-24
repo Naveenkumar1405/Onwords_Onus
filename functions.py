@@ -1,6 +1,6 @@
 import requests
 from datetime import datetime
-fast_api_server_ip = "192.168.1.18:8124"
+fast_api_server_ip = "192.168.1.63:8000"
 
 def get_client_data_tagged_to_staff_by_uid(uid):
     pass

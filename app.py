@@ -355,14 +355,16 @@ def upload_csv():
     return 'Invalid file format'
 
 
-@app.route('/client/profile/<client_number>/<sts>', methods=['GET', 'POST'])
-def change_client_status(client_number, sts):
+@app.route('/client/profile/<client_number>/<status>', methods=['GET', 'POST'])
+def change_client_status(client_number, status): 
     data = {
-        "pr_uid": request.cookies.get('uid'),
-        "state": "sts",
-        "reason": "Unknown"
+    "pr_uid": request.cookies.get('uid'),
+    "state": status,
+    "reason": "Unknown"
     }
-    code = requests.post(f"http://{fast_api_server_ip}/client/{client_number}/sts/{sts}", json=data)
+    print(data, "After status change")
+
+    code = requests.post(f"http://{fast_api_server_ip}/client/{client_number}/sts/{status}", json=data)
 
     client_data = functions.get_client_data_using_phonenumber(client_number)
     notes_list = []
@@ -370,8 +372,8 @@ def change_client_status(client_number, sts):
         if keys == "notes":
             for note in client_data[keys]:
                 notes_list.append(client_data[keys][note])
-
-    return render_template("client_profile.html", client=client_data, message="Status changed!", notes=notes_list)
+     
+    return render_template("client_profile.html", client=client_data, message="Status changed!", notes=notes_list, status=status) 
 
 
 @app.route('/client/notes', methods=['POST'])

@@ -60,18 +60,19 @@
                 {% endif %}
             </div>
             {% if client %}
-                <div class="status-row">
-                    <form action="/client/profile" method="post">
-                        <input type="hidden" name="client_number" value="{{ client_number }}">
-                        <select name="status" onchange="updateFormAction(this)">
-                            <option value="new">New</option>
-                            <option value="interested">Interested</option>
-                            <option value="hot">Hot</option>
-                            <option value="rejected">Rejected</option>
-                            <option value="installed">Installed</option>
-                            <option value="advanced">Advanced</option>
-                        </select>
-                    </form>
+            <div class="status-row">
+                <form action="/client/profile/{{client.phone}}/{{status}}" method="post" class="select-main">
+                    <input type="hidden" name="client_number" value="{{ client_number }}">
+                    <select name="status" onchange="updateFormAction(this)">
+                        <option value="new">New</option>
+                        <option value="interested">Interested</option>
+                        <option value="hot">Hot</option>
+                        <option value="rejected">Rejected</option>
+                        <option value="installed">Installed</option>
+                        <option value="advanced">Advanced</option>
+                    </select>
+                </form>
+
                 <form action="/client/notes" method="post" class="notes-form">
                     <textarea name="notes" placeholder="Add notes..." rows="5" required></textarea>
                     <input type="hidden" name="client_number" value="{{ client.phone }}">
@@ -163,7 +164,7 @@
             const selectedValue = selectElement.value;
             const clientPhone = '{{ client.phone }}';
             const form = selectElement.closest('form');
-            form.action = `/client/profile`;
+            form.action = `/client/profile/${clientPhone}/${selectedValue}`;
             form.submit();
         }
     </script>
