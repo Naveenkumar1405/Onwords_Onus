@@ -11,7 +11,7 @@ app.config["SESSION_PERMANENT"] = True
 app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
 
-fast_api_server_ip = "192.168.1.63:8000"
+fast_api_server_ip = "192.168.1.18:8155"
 logging.basicConfig(level=logging.INFO)
 
 @app.route('/signin', methods=['GET', 'POST'])
@@ -515,4 +515,4 @@ def clientcreate():
                                pod=userpod)
 
 if __name__ == '__main__':
-    app.run(debug=True, host='192.168.1.63', port=8118)
+    app.run(debug=True, host='192.168.1.18', port=8145)
