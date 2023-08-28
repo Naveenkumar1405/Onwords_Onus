@@ -1,6 +1,6 @@
-import requests
+import requests,app
 from datetime import datetime
-fast_api_server_ip = "192.168.1.63:8000"
+fast_api_server_ip = app.fast_api_server_ip
 
 def get_client_data_tagged_to_staff_by_uid(uid):
     pass
@@ -41,3 +41,15 @@ def convert_datetime(date_and_time):
     date_str = dt_obj.strftime('%d-%m-%Y')
     time_str = dt_obj.strftime('%I:%M%p')
     return date_str, time_str
+
+def get_client_notes(client_number):
+    client_data = get_client_data_using_phonenumber(client_number)
+    notes_list = []
+
+    if client_data:
+        for keys in client_data:
+            if keys == "notes":
+                for note in client_data[keys]:
+                    notes_list.append(client_data[keys][note])
+    print("List of Notes :",notes_list)
+    return notes_list

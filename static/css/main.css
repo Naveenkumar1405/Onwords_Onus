@@ -445,3 +445,9 @@ button {
     border-radius: 10px;
     padding: 4px 10px;
 }
+.hide{
+    display:none;
+}
+.table-done {
+    background-color: #dff0d8;
+}

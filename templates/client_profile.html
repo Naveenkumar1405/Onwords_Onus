@@ -1,19 +1,15 @@
 <!DOCTYPE html>
 <html>
-
 <head>
     <meta charset='utf-8'>
     <meta http-equiv='X-UA-Compatible' content='IE=edge'>
-    <title>Onwords IoT Company - Client Profile</title>
+    <title>Onwords - Client's Profile</title>
     <meta name='viewport' content='width=device-width, initial-scale=1'>
-    <!-- bootstarp links -->
     <link rel="stylesheet" href="../static/css/bootstrap.min.css">
     <link rel="stylesheet" href="../static/css/main.css">
     <link rel="stylesheet" href="../static/css/responsive.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-    <!-- bootstarp links -->
 </head>
-
 <body>
     <nav class="navbar navbar-expand-lg top-sticky">
         <div class="container-fluid">
@@ -45,7 +41,6 @@
             </div>
         </div>
     </nav>
-
     <div class="container">
         <div>
             <div>
@@ -53,17 +48,16 @@
                     <button type="submit" value="Search" class="search-icon"><img src="../static/images/search-icon.svg"
                             alt="" class="img-fluid"></button>
                     <input type="text" name="client_number" placeholder="Client number">
-
                 </form>
                 {% if error %}
                 <p style="color: red;">{{error}}</p>
                 {% endif %}
             </div>
-            {% if client %}
+            {% if client_data %}
             <div class="status-row">
-                <form action="/client/profile/{{client.phone}}/{{status}}" method="post" class="select-main">
-                    <input type="hidden" name="client_number" value="{{ client_number }}">
-                    <select name="status" onchange="updateFormAction(this)">
+                <form class="select-main">
+                    <input type="hidden" name="client_number" value="{{ client_data.phone }}">
+                    <select name="status" onchange="changeStatus(this)">
                         <option value="new">New</option>
                         <option value="interested">Interested</option>
                         <option value="hot">Hot</option>
@@ -72,10 +66,9 @@
                         <option value="advanced">Advanced</option>
                     </select>
                 </form>
-
                 <form action="/client/notes" method="post" class="notes-form">
                     <textarea name="notes" placeholder="Add notes..." rows="5" required></textarea>
-                    <input type="hidden" name="client_number" value="{{ client.phone }}">
+                    <input type="hidden" name="client_number" value="{{ client_data.phone }}">
                     <input type="hidden" name="pod" value="{{ pod }}">
                     <input type="hidden" name="role" value="{{ role }}">
                     <input type="hidden" name="username" value="{{ username }}">
@@ -89,7 +82,7 @@
                         <option value="installation">Installation</option>
                     </select><br>
                     <input type="datetime-local" name="schedule_time" required>
-                    <input type="hidden" name="client_number" value="{{ client.phone }}">
+                    <input type="hidden" name="client_number" value="{{ client_data.phone }}">
                     <input type="hidden" name="pod" value="{{ pod }}">
                     <input type="hidden" name="role" value="{{ role }}">
                     <input type="hidden" name="username" value="{{ username }}">
@@ -100,83 +93,122 @@
         </div>
         <div>
             <div class="client-details">
-                {% if client %}
-
+                {% if client_data %}
                 <table class="table">
                     <tr>
                         <th>Name</th>
-                        <td>{{ client.name }}</td>
+                        <td>{{ client_data.name }}</td>
                     </tr>
                     <tr>
                         <th>Phone</th>
-                        <td>
-                            {{ client.phone }}
-                        </td>
+                        <td>{{ client_data.phone }}</td>
                     </tr>
                     <tr>
                         <th>Pod ID:</th>
-                        <td>{{ client.pod_id }}</td>
+                        <td>{{ client_data.pod_id }}</td>
                     </tr>
                     <tr>
                         <th>Rating:</th>
-                        <td>{{ client.rating }}</td>
+                        <td>{{ client_data.rating }}</td>
                     </tr>
                     <tr>
                         <th>Address:</th>
-                        <td>{{ client.address.door_no }}, {{ client.address.street }}, {{ client.address.landmark }}, {{
-                            client.address.city }}, {{ client.address.state }}, {{ client.address.pincode }}</td>
+                        <td>{{ client_data.address.door_no }}, {{ client_data.address.street }}, {{ client_data.address.landmark }},
+                            {{client_data.address.city }}, {{ client_data.address.state }}, {{ client_data.address.pincode }}</td>
                     </tr>
                     <tr>
                         <th>Enquiry:</th>
-                        <td> Created by: {{ client.enquiry.created_by }}, Enquired for: {{ client.enquiry.enquired_for
-                            }}, Lead source: {{ client.enquiry.lead_source }}</td>
+                        <td> Created by: {{ client_data.enquiry.created_by }}, Enquired for: {{ client_data.enquiry.enquired_for }},
+                            Lead source: {{ client_data.enquiry.lead_source }}</td>
                     </tr>
                 </table>
-                {% for note in notes %}
-                <table class="table">
-                    <tr>
-                        <th>Date:</th>
-                        <td>{{ note.date }}</td>
-                    </tr>
-                    <tr>
-                        <th>Time:</th>
-                        <td>{{ note.time }}</td>
-                    </tr>
-                    <tr>
-                        <th>User ID:</th>
-                        <td>{{ note.pr_name }}</td>
-                    </tr>
-                    <tr>
-                        <th>Note:</th>
-                        <td>{{ note.notes }}</td>
-                    </tr>
-                </table>
-                <hr>
+                {% for note in notes_list %}
+                    <table class="table">
+                        <tr>
+                            <th>Date:</th>
+                            <td>{{ note.date }}</td>
+                        </tr>
+                        <tr>
+                            <th>Time:</th>
+                            <td>{{ note.time }}</td>
+                        </tr>
+                        <tr>
+                            <th>User ID:</th>
+                            <td>{{ note.pr_name }}</td>
+                        </tr>
+                        <tr>
+                            <th>Note:</th>
+                            <td>{{ note.notes }}</td>
+                        </tr>
+                    </table>
+                    <hr>
                 {% endfor %}
             </div>
             {% endif %}
         </div>
     </div>
     </div>
-    {% if client %}
-    <script>
-        function updateFormAction(selectElement) {
-            const selectedValue = selectElement.value;
-            const clientPhone = '{{ client.phone }}';
-            const form = selectElement.closest('form');
-            form.action = `/client/profile/${clientPhone}/${selectedValue}`;
-            form.submit();
-        }
-    </script>
+    {% if client_data %}
+        <script>
+            function changeStatus(selectElement) {
+                const selectedValue = selectElement.value;
+                const client_number = '{{ client_data.phone }}';
+                const xhr = new XMLHttpRequest();
+                
+                xhr.onreadystatechange = function () {
+                    if (xhr.readyState === XMLHttpRequest.DONE) {
+                        if (xhr.status === 200) {
+                        } else {
+                            console.error('Error changing status:', xhr.status);
+                        }
+                    }
+                };
+                
+                xhr.open('POST', `/status_change`, true);
+                xhr.setRequestHeader('Content-Type', 'application/json');
+                xhr.send(JSON.stringify({ client_number: client_number, status: selectedValue }));
+            }
+        </script>
+        <script>
+            function displayNotes(client_data) {
+                const notesContainer = document.getElementById('notesContainer');
+                let htmlContent = '';
+                for (let key in client_data.notes) {
+                    const note = client_data.notes[key];
+                    htmlContent += `
+                    <div class="note">
+                        <p><strong>User ID:</strong> ${note.pr_user_id}</p>
+                        <p><strong>Note:</strong> ${note.notes}</p>
+                    </div>`;
+                }
+                notesContainer.innerHTML = htmlContent;
+            }
+            function addNote() {
+                var note = $("#notes").val();
+                var clientNumber = $("#client_number").val();
+                
+                var data = {
+                    notes: note,
+                    client_number: clientNumber
+                };
+            
+                $.ajax({
+                    type: "POST",
+                    url: "/client/notes",
+                    data: data,
+                    success: function(response) {
+                        location.reload();
+                    },
+                    error: function(error) {
+                        console.error("Error adding note:", error);
+                    }
+                });
+            }             
+        </script>      
     {% endif %}
-    <!-- script start -->
     <script src="../static/js/bootstrap.bundle.js"></script>
     <script src="../static/js/bootstrap.min.js"></script>
     <script src="../static/js/main.js"></script>
-    <!-- script end -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
-        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
 </body>
-
 </html>

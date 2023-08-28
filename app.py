@@ -1,5 +1,5 @@
-import requests,io,csv,functions,logging
-from flask import Flask, render_template, redirect, request, session, url_for, make_response, flash
+import requests,io,csv,functions,logging,json
+from flask import Flask, jsonify, render_template, redirect, request, session, url_for, make_response, flash
 from flask_session import Session
 from datetime import datetime
 
@@ -80,7 +80,6 @@ def staffcreate():
             "phone": phone,
             "email": email,
             "department": department,
-            # "pod_id": pod_id,
             "dob": dob,
             "blood_group": blood_group,
             "profile_pic_url": profile_pic_url,
@@ -151,14 +150,12 @@ def my_schedule():
         remaining_time = event_date_time - now
         days = remaining_time.days
         if remaining_time.total_seconds() > 0:
-            # Format to days, hours, minutes
             hours, remainder = divmod(remaining_time.seconds, 3600)
             minutes, _ = divmod(remainder, 60)
             schedules['remaining_time'] = f"{hours}:{str(minutes).zfill(2)}" if days == 0 else f"{days} days, {hours}:{str(minutes).zfill(2)}"
         else:
             schedules['remaining_time'] = "Breached"
-
-        # Check if the event is today
+            
         schedules['is_today'] = True if days == 0 and remaining_time.total_seconds() > 0 else False
 
         pr_user_id = schedules['pr_user_id']
@@ -175,8 +172,30 @@ def my_schedule():
     return render_template("my_schedule.html", schedule_data=schedule_data, username=username, role=userrole,
                            pod=userpod, now_date=datetime.now().strftime('%d-%m-%Y'))
 
-
-
+@app.route("/schedule_action", methods=["POST"])
+def schedule_action():
+    data = request.json
+    action = data.get("action")
+    schedule_id = data.get("schedule_id")
+    if action == "mark_done":
+        
+        response = requests.put(f"http://{fast_api_server_ip}/mark_schedule_done/{schedule_id}")
+        response_data = {"status": "Done"}
+        response_data=jsonify(response_data)
+        if response.status_code == 200:
+            flash("Schedule marked as done", "success")
+        else:
+            flash("Failed to mark schedule as done", "error")
+    elif action == "delete":
+        
+        response = requests.delete(f"http://{fast_api_server_ip}/delete_schedule/{schedule_id}")
+        
+        if response.status_code == 200:
+            flash("Schedule deleted successfully", "success")
+        else:
+            flash("Failed to delete schedule", "error")
+    
+    return redirect(url_for("my_schedule"))
 
 @app.route('/pod', methods=['GET', 'POST'])
 def pod():
@@ -199,15 +218,14 @@ def pod():
         staff_name = staff_data[0]
         staff_uid = staff_data[1]
         staff_zip = zip(staff_name, staff_uid)
-        return render_template('pod.html', staff_zip=staff_zip, username=username, role=userrole, pod=userpod)
+        return render_template('pod.html', staff_zip=staff_zip, username=username, role=userrole, pod=userpod,staff_list=staff_list )
     else:
         staff_list = functions.get_all_staff_name()
         staff_data = functions.get_all_staff_data()
         staff_name = staff_data[0]
         staff_uid = staff_data[1]
         staff_zip = zip(staff_name, staff_uid)
-        return render_template('pod.html', staff_zip=staff_zip, username=username, role=userrole, pod=userpod)
-
+        return render_template('pod.html', staff_zip=staff_zip, username=username, role=userrole, pod=userpod,staff_list=staff_list)
 
 @app.route('/', methods=['GET', 'POST'])
 def home():
@@ -239,7 +257,6 @@ def home():
                             client_state=client_state, 
                             client=new_client_data))
 
-        # Set cookies
         for key, value in {"user_name": user_name['name'], "user_role": user_name['role'], "user_pod": pod}.items():
             resp.set_cookie(key, str(value), max_age=60 * 60 * 24 * 365 * 2)
 
@@ -262,19 +279,22 @@ def client_profile():
 
     if request.method == 'POST':
         client_number = request.form.get('client_number')
-        logging.info(f'Received form with client number: {client_number}')
+        client_data = functions.get_client_data_using_phonenumber(client_number)
 
-        try:
-            client_data = requests.get(f"http://{fast_api_server_ip}/client/{client_number}").json()
-            notes_list = process_notes(client_data)
-        except (requests.exceptions.RequestException, ValueError, KeyError) as e:
-            logging.error(f"Error processing client data: {e}")
-            error = "Failed to get or process client data"
+        notes_list = []
+
+        if client_data:
+            try:
+                notes_list = process_notes(client_data)
+            except (ValueError, KeyError) as e:
+                logging.error(f"Error processing client data: {e}")
+                error = "Failed to process client data"
+        else:
+            error = "Failed to get client data"
 
     return render_template("client_profile.html", username=username, role=userrole, pod=userpod,
-                           client_number=client_number, client=client_data, convert_timestamp=convert_timestamp,
-                           notes=notes_list, error=error)
-
+                           client_number=client_number, client_data=client_data, notes_list=notes_list,
+                           error=error, convert_timestamp=convert_timestamp)
 
 def process_notes(client_data):
     notes_list = []
@@ -282,7 +302,6 @@ def process_notes(client_data):
         if keys == "notes":
             for note in client_data[keys]:
                 notes_list.append(client_data[keys][note])
-    logging.info(f"before - {notes_list}")
 
     for note in notes_list:
         pr_uid = note.get('pr_user_id')
@@ -301,13 +320,14 @@ def process_notes(client_data):
 
             del note['pr_user_id']
             del note['timestamp']
-
-    logging.info(f"after altering = {notes_list}")
+    
     return notes_list
-
 
 @app.route('/upload_csv', methods=['POST'])
 def upload_csv():
+    username = request.cookies.get('user_name')
+    userrole = request.cookies.get('user_role')
+    userpod = request.cookies.get('user_pod')
     if 'csvfile' not in request.files:
         return 'No file part'
 
@@ -322,6 +342,8 @@ def upload_csv():
 
         if 'ad_name' not in header:
             return "The column 'ad_name' was not found in the uploaded CSV file. Please check the file and try again."
+
+        uploaded_clients = []
 
         indices = {
             "ad_name": header.index('ad_name'),
@@ -346,62 +368,51 @@ def upload_csv():
                 "city": row[indices['city']],
             }
 
-            response = requests.post(f"http://{fast_api_server_ip}/save_data/", json=data)
-            if response.status_code != 200:
-                return f"Error while saving data: {response.text}"
+            uploaded_clients.append(data)
+            
+        response = requests.post(f"http://{fast_api_server_ip}/save_uploaded_clients/", json=uploaded_clients)
+        if response.status_code == 200:
+            return 'Data successfully saved'
+        else:
+            return f"Error while saving data: {response.text}"
 
-        return 'Data successfully saved'
-
-    return 'Invalid file format'
+    return render_template('createstaff.html', username=username, role=userrole, pod=userpod)
 
 
-@app.route('/client/profile/<client_number>/<status>', methods=['GET', 'POST'])
-def change_client_status(client_number, status): 
+@app.route('/status_change', methods=['POST','GET'])
+def change_client_status():
+    data = json.loads(request.data)
+    client_number = data['client_number']
+    status = data['status']
     data = {
-    "pr_uid": request.cookies.get('uid'),
-    "state": status,
-    "reason": "Unknown"
+        "pr_uid": request.cookies.get('uid'),
+        "status": status
     }
-    print(data, "After status change")
-
-    code = requests.post(f"http://{fast_api_server_ip}/client/{client_number}/sts/{status}", json=data)
-
+    response = requests.post(f"http://{fast_api_server_ip}/status_change/{client_number}", json=data)
     client_data = functions.get_client_data_using_phonenumber(client_number)
-    notes_list = []
-    for keys in client_data:
-        if keys == "notes":
-            for note in client_data[keys]:
-                notes_list.append(client_data[keys][note])
-     
-    return render_template("client_profile.html", client=client_data, message="Status changed!", notes=notes_list, status=status) 
+    response_data = response.json()
+    
+    notes_list = process_notes(client_data)
 
+    return render_template("client_profile.html", client_data=client_data, notes_list=notes_list, message="Status changed!", status=status, response=response_data)
 
 @app.route('/client/notes', methods=['POST'])
 def add_note():
     note = request.form.get('notes')
     client_number = request.form.get('client_number')
-    role = request.form.get('role')
-    username = request.form.get("username")
-    pod = request.form.get('pod')
-
+    
     data = {
         "pr_user_id": request.cookies.get('uid'),
         "notes": note
     }
-    x = requests.post(f"http://{fast_api_server_ip}/client/{client_number}/add_notes", json=data)
+    
+    response = requests.post(f"http://{fast_api_server_ip}/client/{client_number}/add_notes", json=data)
+    new_note_data = response.json()
+    target_url = f"/client/profile"
+    
+    return redirect(target_url)
 
-    client_data = functions.get_client_data_using_phonenumber(client_number)
-
-    notes_list = []
-    for keys in client_data:
-        if keys == "notes":
-            for note in client_data[keys]:
-                notes_list.append(client_data[keys][note])
-    return render_template("client_profile.html", client=client_data, notes=notes_list, role=role, username=username,
-                           pod=pod)
-
-
-@app.route('/client/schedule', methods=['POST'])
+@app.route('/client/schedule', methods=['POST','GET'])
 def add_schedule():
     schedule_type = request.form.get('schedule_type')
     pod = request.form.get('pod')
@@ -427,7 +438,6 @@ def add_schedule():
     return render_template("client_profile.html", client=client_data, notes=notes_list, pod=pod, role=role,
                            username=username)
 
-
 @app.route('/logout')
 def logout():
     session.pop('uid', None)
@@ -440,48 +450,6 @@ def logout():
     resp.delete_cookie('user_role')
     resp.delete_cookie('user_pod')
     return redirect(url_for("signin"))
-
-
-
-
-
-# @app.route('/client_search', methods=['GET', 'POST'])
-# def client_search():
-#     if request.method == 'POST':
-#         client_number = request.form['clientnumber']
-#         fastapi_url = f"http://{fast_api_server_ip}:8000/client/{client_number}"
-#         try:
-#             response = requests.get(url=fastapi_url)
-#             return render_template('staffdashboard.html', message=response.json())
-#         except:
-#             message = "Server Down"
-#             return render_template('staffdashboard.html', message=message)
-#     else:
-#         return render_template('staffdashboard.html')
-
-
-@app.route('/statuschange', methods=['GET', 'POST'])
-def statuschange():
-    if request.method == 'POST':
-        pr_uid = request.cookies.get('uid')
-        clientid = request.form['clientid']
-        state = request.form['state']
-        reason = request.form['reason']
-        status = {
-            "pr_uid": pr_uid,
-            "state": state,
-            "reason": reason
-        }
-
-        fastapi_url = f"http://{fast_api_server_ip}:8000/client/{clientid}/sts/{state}"
-        try:
-            response = requests.post(url=fastapi_url, json=status)
-            return render_template('statuschange.html', message=response.json())
-        except Exception as e:
-            message = e
-            return render_template('statuschange.html', message=message)
-    else:
-        return render_template('statuschange.html')
 
 @app.route('/create_client', methods=['GET', 'POST'])
 def clientcreate():
@@ -528,9 +496,9 @@ def clientcreate():
             },
 
         }
-        # URL of the FastAPI endpoint
+        
         fastapi_url = f"http://{fast_api_server_ip}/create_client"
-        # Make an HTTP POST request to the FastAPI endpoint
+        
         try:
             response = requests.post(url=fastapi_url, json=client)
             pod_name_list = functions.get_all_pod_names()
