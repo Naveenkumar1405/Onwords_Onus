@@ -22,14 +22,27 @@ def get_client_data_using_phonenumber(client_number):
     return client_data
 
 
-staff_data = requests.get(f"http://{fast_api_server_ip}/staff/data/all").json()
 
-def convert_pr_uid_to_name(uid):
+def fetch_staff_data():
+    try:
+        staff_data = requests.get(f"http://{fast_api_server_ip}/staff/data/all").json()
+        return staff_data
+    except requests.exceptions.RequestException as e:
+        print(f"Error fetching staff data: {e}")
+        return None
+
+def convert_pr_uid_to_name(uid, staff_data):
+    if staff_data is None:
+        print("Staff data is not available.")
+        return None
+
     for staff in staff_data:
         if uid == staff:
             staff_name = staff_data[staff]['name']
             return staff_name
     return None
+
+staff_data = fetch_staff_data()
 
 def convert_to_timestamp(date, time):
     dt_string = date + " " + time
