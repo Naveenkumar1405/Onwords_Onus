@@ -21,6 +21,7 @@ def get_client_data_using_phonenumber(client_number):
         return e
     return client_data
 
+
 staff_data = requests.get(f"http://{fast_api_server_ip}/staff/data/all").json()
 
 def convert_pr_uid_to_name(uid):
