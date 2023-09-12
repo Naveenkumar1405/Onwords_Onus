@@ -125,6 +125,8 @@ def my_schedule():
     username = request.cookies.get('user_name')
     userrole = request.cookies.get('user_role')
     userpod = request.cookies.get('user_pod')
+
+    staff_data = functions.fetch_staff_data()
     
     response = requests.get(f"http://{fast_api_server_ip}/schedule/{uid}")
     if response.status_code != 200:
@@ -159,7 +161,7 @@ def my_schedule():
         schedules['is_today'] = True if days == 0 and remaining_time.total_seconds() > 0 else False
 
         pr_user_id = schedules['pr_user_id']
-        pr_name = functions.convert_pr_uid_to_name(pr_user_id)
+        pr_name = functions.convert_pr_uid_to_name(pr_user_id, staff_data)
         time_stamp = schedules['schedule_created_timestamp']
         dt_obj = datetime.fromtimestamp(time_stamp)
         date_str = dt_obj.strftime('%d-%m-%Y')
@@ -285,7 +287,8 @@ def client_profile():
 
         if client_data:
             try:
-                notes_list = process_notes(client_data)
+                staff_data = functions.fetch_staff_data()
+                notes_list = process_notes(client_data, staff_data)
             except (ValueError, KeyError) as e:
                 logging.error(f"Error processing client data: {e}")
                 error = "Failed to process client data"
@@ -296,7 +299,7 @@ def client_profile():
                            client_number=client_number, client_data=client_data, notes_list=notes_list,
                            error=error, convert_timestamp=convert_timestamp)
 
-def process_notes(client_data):
+def process_notes(client_data, staff_data):
     notes_list = []
     for keys in client_data:
         if keys == "notes":
@@ -306,7 +309,7 @@ def process_notes(client_data):
     for note in notes_list:
         pr_uid = note.get('pr_user_id')
         if pr_uid:
-            pr_name = functions.convert_pr_uid_to_name(pr_uid)
+            pr_name = functions.convert_pr_uid_to_name(pr_uid, staff_data)
             note["pr_name"] = pr_name
 
         time_stamp = note.get('timestamp')
@@ -322,6 +325,7 @@ def process_notes(client_data):
             del note['timestamp']
     
     return notes_list
+
 
 @app.route('/upload_csv', methods=['POST'])
 def upload_csv():

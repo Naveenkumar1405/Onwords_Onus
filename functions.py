@@ -21,8 +21,6 @@ def get_client_data_using_phonenumber(client_number):
         return e
     return client_data
 
-
-
 def fetch_staff_data():
     try:
         staff_data = requests.get(f"http://{fast_api_server_ip}/staff/data/all").json()
@@ -41,7 +39,6 @@ def convert_pr_uid_to_name(uid, staff_data):
             staff_name = staff_data[staff]['name']
             return staff_name
     return None
-
 staff_data = fetch_staff_data()
 
 def convert_to_timestamp(date, time):
@@ -57,13 +54,19 @@ def convert_datetime(date_and_time):
     return date_str, time_str
 
 def get_client_notes(client_number):
-    client_data = get_client_data_using_phonenumber(client_number)
-    notes_list = []
-
-    if client_data:
-        for keys in client_data:
-            if keys == "notes":
-                for note in client_data[keys]:
-                    notes_list.append(client_data[keys][note])
-    print("List of Notes :",notes_list)
-    return notes_list
+    try:
+        client_data = get_client_data_using_phonenumber(client_number)
+        notes_list = []
+        if client_data:
+            for keys in client_data:
+                if keys == "notes":
+                    for note in client_data[keys]:
+                        notes_list.append(client_data[keys][note])
+        print("List of Notes:", notes_list)
+        return notes_list
+    except requests.exceptions.RequestException as e:
+        print(f"Error while requesting client data: {e}")
+        return []
+    except Exception as ex:
+        print(f"Error while processing client data: {ex}")
+        return []

@@ -62,8 +62,24 @@
 
                     <div class="form-grp">
                         <label for="phone">Phone:</label><br>
-                        <input type="tel" class="" id="phone" name="phone" required maxlength="10" minlength="10">
+                        <input type="tel" id="phone" name="phone" maxlength="10" required>
+                        <div id="phoneError" style="color: red;"></div>
                     </div>
+                    
+                    <script>
+                        const phoneInput = document.getElementById("phone");
+                        const phoneError = document.getElementById("phoneError");
+                    
+                        phoneInput.addEventListener("input", function () {
+                            const phoneNumber = phoneInput.value.replace(/\D/g, '');
+                            if (phoneNumber.length > 10) {
+                                phoneInput.value = phoneNumber.slice(0, 10);
+                                phoneError.textContent = "Phone number is limited to 10 digits.";
+                            } else {
+                                phoneError.textContent = "";
+                            }
+                        });
+                    </script>                      
                 </div>
                 <h3>Address</h3>
                 <div class="address-client">
